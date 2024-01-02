@@ -4,19 +4,21 @@
  */
 package findjob;
 import java.sql.*;
+import javax.swing.JOptionPane;
 /**
  *
  * @author BusraGural
  */
 public class LoginUI extends javax.swing.JFrame {
-
+    public static User currentUser = new User();
     private Connection conn;
-
+    User newUser = new User(); 
     /**
      * Creates new form LoginUI
      */
     public LoginUI(Connection conn) {
         this.conn = conn;
+        currentUser = null;
         initComponents();
     }
 
@@ -32,17 +34,17 @@ public class LoginUI extends javax.swing.JFrame {
         loginPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
         usernameField = new javax.swing.JTextField();
-        passwordField = new javax.swing.JTextField();
         usernameLabel = new javax.swing.JLabel();
         passwordLabel = new javax.swing.JLabel();
         registerLabel = new javax.swing.JLabel();
         submitButton = new javax.swing.JButton();
+        passwordField = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         loginPanel.setBackground(new java.awt.Color(234, 231, 231));
         loginPanel.setForeground(new java.awt.Color(234, 231, 231));
-        loginPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        loginPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         loginPanel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
 
         titleLabel.setFont(new java.awt.Font("SansSerif", 1, 48)); // NOI18N
@@ -59,16 +61,6 @@ public class LoginUI extends javax.swing.JFrame {
             }
         });
 
-        passwordField.setBackground(new java.awt.Color(234, 231, 231));
-        passwordField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        passwordField.setForeground(new java.awt.Color(39, 41, 50));
-        passwordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(118, 179, 157), 2, true));
-        passwordField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordFieldActionPerformed(evt);
-            }
-        });
-
         usernameLabel.setBackground(new java.awt.Color(19, 47, 43));
         usernameLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         usernameLabel.setForeground(new java.awt.Color(39, 41, 50));
@@ -82,6 +74,12 @@ public class LoginUI extends javax.swing.JFrame {
         registerLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         registerLabel.setForeground(new java.awt.Color(39, 41, 50));
         registerLabel.setText("Henüz üye değil misin? Hemen kaydol.");
+        registerLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        registerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                registerLabelMousePressed(evt);
+            }
+        });
 
         submitButton.setBackground(new java.awt.Color(118, 179, 157));
         submitButton.setFont(new java.awt.Font("SansSerif", 1, 20)); // NOI18N
@@ -90,6 +88,16 @@ public class LoginUI extends javax.swing.JFrame {
         submitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 submitButtonActionPerformed(evt);
+            }
+        });
+
+        passwordField.setBackground(new java.awt.Color(234, 231, 231));
+        passwordField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        passwordField.setForeground(new java.awt.Color(39, 41, 50));
+        passwordField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(118, 179, 157), 2));
+        passwordField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordFieldActionPerformed(evt);
             }
         });
 
@@ -102,12 +110,12 @@ public class LoginUI extends javax.swing.JFrame {
                     .addGroup(loginPanelLayout.createSequentialGroup()
                         .addGap(77, 77, 77)
                         .addGroup(loginPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(passwordLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(titleLabel)
                             .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(loginPanelLayout.createSequentialGroup()
                         .addGap(104, 104, 104)
                         .addComponent(registerLabel)))
@@ -147,10 +155,6 @@ public class LoginUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_passwordFieldActionPerformed
-
     private void usernameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameFieldActionPerformed
@@ -158,40 +162,33 @@ public class LoginUI extends javax.swing.JFrame {
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
         // TODO add your handling code here:
         String username = usernameField.getText();
-        String password = passwordField.getText();
+        String password = new String(passwordField.getPassword());
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
-        Connection conn = this.conn;
-        try {
-        // SQL query to create the 'Users' table if it doesn't exist
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY, username VARCHAR(255), password VARCHAR(255))";
+        boolean found = newUser.loginCheck(conn, username, password);
         
-        try (Statement statement = conn.createStatement()) {
-            // Execute the query to create the table
-            statement.executeUpdate(createTableQuery);
-
-            // SQL query to insert data into the 'Users' table
-            String insertQuery = "INSERT INTO Users (username, password) VALUES (?, ?)";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
-                // Set values for the parameters
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
-
-                // Execute the query
-                int rowsAffected = preparedStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    System.out.println("User registered successfully!");
-                } else {
-                    System.out.println("Failed to register user.");
-                }
-            }
+        if(found){
+            currentUser = new User(username, password);
+            currentUser.setUsername(username);
+            System.out.println("name " + currentUser.getUsername());
+            dispose();
+            new AccountPageUI(conn).setVisible(true);
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
+        else{
+            String message = "Invalid user.";
+            JOptionPane.showMessageDialog(this, message);
+        }
+        
     }//GEN-LAST:event_submitButtonActionPerformed
+
+    private void registerLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerLabelMousePressed
+        // TODO add your handling code here:
+        new RegisterUI(conn).setVisible(true);
+    }//GEN-LAST:event_registerLabelMousePressed
+
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -232,7 +229,7 @@ public class LoginUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel loginPanel;
-    private javax.swing.JTextField passwordField;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
     private javax.swing.JLabel registerLabel;
     private javax.swing.JButton submitButton;

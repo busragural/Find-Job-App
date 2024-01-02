@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package findjob;
+import java.sql.*;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -10,10 +12,13 @@ package findjob;
  */
 public class RegisterUI extends javax.swing.JFrame {
 
+    private Connection conn;
+    
     /**
      * Creates new form RegisterUI
      */
-    public RegisterUI() {
+    public RegisterUI(Connection conn) {
+        this.conn = conn;
         initComponents();
     }
 
@@ -31,7 +36,6 @@ public class RegisterUI extends javax.swing.JFrame {
         usernameLabel = new javax.swing.JLabel();
         usernameField = new javax.swing.JTextField();
         passwordLabel = new javax.swing.JLabel();
-        passwordField = new javax.swing.JTextField();
         mailField = new javax.swing.JTextField();
         mailLabel = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
@@ -39,6 +43,7 @@ public class RegisterUI extends javax.swing.JFrame {
         nameLabel = new javax.swing.JLabel();
         nameLabel1 = new javax.swing.JLabel();
         submitButton = new javax.swing.JButton();
+        passwordField = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(234, 231, 231));
@@ -55,6 +60,7 @@ public class RegisterUI extends javax.swing.JFrame {
         usernameLabel.setText("Kullanıcı Adı");
 
         usernameField.setBackground(new java.awt.Color(234, 231, 231));
+        usernameField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         usernameField.setForeground(new java.awt.Color(39, 41, 50));
         usernameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(118, 179, 157), 2, true));
         usernameField.addActionListener(new java.awt.event.ActionListener() {
@@ -68,16 +74,8 @@ public class RegisterUI extends javax.swing.JFrame {
         passwordLabel.setForeground(new java.awt.Color(39, 41, 50));
         passwordLabel.setText("Şifre");
 
-        passwordField.setBackground(new java.awt.Color(234, 231, 231));
-        passwordField.setForeground(new java.awt.Color(39, 41, 50));
-        passwordField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(118, 179, 157), 2, true));
-        passwordField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordFieldActionPerformed(evt);
-            }
-        });
-
         mailField.setBackground(new java.awt.Color(234, 231, 231));
+        mailField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         mailField.setForeground(new java.awt.Color(39, 41, 50));
         mailField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(118, 179, 157), 2, true));
         mailField.addActionListener(new java.awt.event.ActionListener() {
@@ -92,6 +90,7 @@ public class RegisterUI extends javax.swing.JFrame {
         mailLabel.setText("E-mail");
 
         nameField.setBackground(new java.awt.Color(234, 231, 231));
+        nameField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         nameField.setForeground(new java.awt.Color(39, 41, 50));
         nameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(118, 179, 157), 2, true));
         nameField.addActionListener(new java.awt.event.ActionListener() {
@@ -101,6 +100,7 @@ public class RegisterUI extends javax.swing.JFrame {
         });
 
         surnameField.setBackground(new java.awt.Color(234, 231, 231));
+        surnameField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         surnameField.setForeground(new java.awt.Color(39, 41, 50));
         surnameField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(118, 179, 157), 2, true));
         surnameField.addActionListener(new java.awt.event.ActionListener() {
@@ -129,6 +129,16 @@ public class RegisterUI extends javax.swing.JFrame {
             }
         });
 
+        passwordField.setBackground(new java.awt.Color(234, 231, 231));
+        passwordField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        passwordField.setForeground(new java.awt.Color(39, 41, 50));
+        passwordField.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(118, 179, 157), 2));
+        passwordField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordFieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout registerPanelLayout = new javax.swing.GroupLayout(registerPanel);
         registerPanel.setLayout(registerPanelLayout);
         registerPanelLayout.setHorizontalGroup(
@@ -138,7 +148,6 @@ public class RegisterUI extends javax.swing.JFrame {
                 .addGroup(registerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerPanelLayout.createSequentialGroup()
                         .addGroup(registerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(passwordLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(mailLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -155,7 +164,8 @@ public class RegisterUI extends javax.swing.JFrame {
                                 .addGroup(registerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(nameLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(surnameField, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(336, 336, 336))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, registerPanelLayout.createSequentialGroup()
                         .addComponent(titleLabel)
@@ -209,10 +219,6 @@ public class RegisterUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameFieldActionPerformed
 
-    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_passwordFieldActionPerformed
-
     private void mailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mailFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_mailFieldActionPerformed
@@ -226,8 +232,31 @@ public class RegisterUI extends javax.swing.JFrame {
     }//GEN-LAST:event_surnameFieldActionPerformed
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here
+        String name = nameField.getText();
+        String surname = surnameField.getText();
+        String mail = mailField.getText();
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+        if(name.isBlank()  || surname.isBlank() || mail.isBlank() || username.isBlank() || password.isBlank() ){
+            String message = "Alanlar bos birakilamaz.";
+            JOptionPane.showMessageDialog(this, message);
+            return;
+        }
+        User newUser = new User(name, surname, mail, username, password); 
+        newUser.register(conn, newUser);
+        newUser.checkEducationTable(conn);
+        newUser.checkExperienceTable(conn);
+        newUser.checkCertificateTable(conn);
+        String message = "Kayıt basarili!";
+        JOptionPane.showMessageDialog(this, message);
+        dispose();
+        
     }//GEN-LAST:event_submitButtonActionPerformed
+
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -260,7 +289,8 @@ public class RegisterUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RegisterUI().setVisible(true);
+                Connection conn = null;
+                new RegisterUI(conn).setVisible(true);
             }
         });
     }
@@ -271,7 +301,7 @@ public class RegisterUI extends javax.swing.JFrame {
     private javax.swing.JTextField nameField;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JLabel nameLabel1;
-    private javax.swing.JTextField passwordField;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
     private javax.swing.JPanel registerPanel;
     private javax.swing.JButton submitButton;

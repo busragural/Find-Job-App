@@ -4,17 +4,32 @@
  */
 package findjob;
 
+import java.sql.*;
+
 /**
  *
  * @author BusraGural
  */
 public class AccountPageUI extends javax.swing.JFrame {
-
+    Connection conn;
+    User currentUser;
+    
+    
+    private boolean edit = false;
     /**
      * Creates new form AccountPageUI
      */
-    public AccountPageUI() {
+    public AccountPageUI(Connection conn) {
+        this.conn = conn;
+        currentUser = LoginUI.currentUser;
+        System.out.println("name2 " + currentUser.getUsername());
         initComponents();
+        currentUser = currentUser.fetchUserDetails(conn, currentUser.getUsername());
+        
+        nameField.setText(currentUser.getName() + " " + currentUser.getSurname());
+        if(!edit){
+            Helpers.disableTextFields(jPanel1);        
+        }
     }
 
     /**
@@ -30,8 +45,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         imagePanel = new javax.swing.JPanel();
-        editButton = new javax.swing.JButton();
-        nameLabel = new javax.swing.JLabel();
+        nameField = new javax.swing.JTextField();
         educationLabel = new javax.swing.JLabel();
         educationPanel = new javax.swing.JPanel();
         schoolNameField = new javax.swing.JTextField();
@@ -40,6 +54,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         finishDateField = new javax.swing.JTextField();
         gradeField = new javax.swing.JTextField();
         gradeLabel = new javax.swing.JLabel();
+        eduEditButton = new javax.swing.JButton();
         experinceLabel = new javax.swing.JLabel();
         experiencePanel = new javax.swing.JPanel();
         schoolNameField1 = new javax.swing.JTextField();
@@ -47,12 +62,14 @@ public class AccountPageUI extends javax.swing.JFrame {
         startField = new javax.swing.JTextField();
         finishField = new javax.swing.JTextField();
         jobField = new javax.swing.JTextField();
+        expEditButton = new javax.swing.JButton();
         certifLabel = new javax.swing.JLabel();
         certifPanel = new javax.swing.JPanel();
         certifNameField = new javax.swing.JTextField();
         cstartField = new javax.swing.JTextField();
         cfinishField = new javax.swing.JTextField();
         departmentField = new javax.swing.JTextField();
+        certEditButton = new javax.swing.JButton();
         appLabel = new javax.swing.JLabel();
         appPanel = new javax.swing.JPanel();
         advTitle = new javax.swing.JTextField();
@@ -68,38 +85,28 @@ public class AccountPageUI extends javax.swing.JFrame {
 
         imagePanel.setBackground(new java.awt.Color(118, 179, 157));
 
-        editButton.setBackground(new java.awt.Color(231, 231, 231));
-        editButton.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        editButton.setForeground(new java.awt.Color(118, 179, 157));
-        editButton.setText("Düzenle");
-        editButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout imagePanelLayout = new javax.swing.GroupLayout(imagePanel);
         imagePanel.setLayout(imagePanelLayout);
         imagePanelLayout.setHorizontalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, imagePanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(editButton)
-                .addContainerGap())
+            .addGap(0, 756, Short.MAX_VALUE)
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(imagePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(editButton)
-                .addContainerGap(117, Short.MAX_VALUE))
+            .addGap(0, 150, Short.MAX_VALUE)
         );
 
-        nameLabel.setBackground(new java.awt.Color(234, 231, 231));
-        nameLabel.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
-        nameLabel.setForeground(new java.awt.Color(40, 55, 57));
-        nameLabel.setText("AD SOYAD");
+        nameField.setBackground(new java.awt.Color(231, 231, 231));
+        nameField.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        nameField.setForeground(new java.awt.Color(40, 55, 57));
+        nameField.setText("AD SOYAD");
+        nameField.setCaretColor(new java.awt.Color(3, 39, 103));
+        nameField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
+        nameField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nameFieldActionPerformed(evt);
+            }
+        });
 
         educationLabel.setFont(new java.awt.Font("SansSerif", 1, 20)); // NOI18N
         educationLabel.setForeground(new java.awt.Color(40, 55, 57));
@@ -112,6 +119,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         schoolNameField.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         schoolNameField.setForeground(new java.awt.Color(40, 55, 57));
         schoolNameField.setText("Üniversite Adı");
+        schoolNameField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         schoolNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 schoolNameFieldActionPerformed(evt);
@@ -122,6 +130,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         departmentNameField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         departmentNameField.setForeground(new java.awt.Color(40, 55, 57));
         departmentNameField.setText("Bölüm Adı");
+        departmentNameField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         departmentNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 departmentNameFieldActionPerformed(evt);
@@ -132,6 +141,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         startDateField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         startDateField.setForeground(new java.awt.Color(40, 55, 57));
         startDateField.setText("Başlangıç Tarihi");
+        startDateField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         startDateField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startDateFieldActionPerformed(evt);
@@ -142,6 +152,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         finishDateField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         finishDateField.setForeground(new java.awt.Color(40, 55, 57));
         finishDateField.setText("Bitiş Tarihi");
+        finishDateField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         finishDateField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 finishDateFieldActionPerformed(evt);
@@ -152,6 +163,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         gradeField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         gradeField.setForeground(new java.awt.Color(40, 55, 57));
         gradeField.setText("3.8");
+        gradeField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         gradeField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gradeFieldActionPerformed(evt);
@@ -161,6 +173,17 @@ public class AccountPageUI extends javax.swing.JFrame {
         gradeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         gradeLabel.setForeground(new java.awt.Color(39, 41, 50));
         gradeLabel.setText("Not Ortalaması:");
+
+        eduEditButton.setBackground(new java.awt.Color(231, 231, 231));
+        eduEditButton.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        eduEditButton.setForeground(new java.awt.Color(118, 179, 157));
+        eduEditButton.setText("Düzenle");
+        eduEditButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        eduEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eduEditButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout educationPanelLayout = new javax.swing.GroupLayout(educationPanel);
         educationPanel.setLayout(educationPanelLayout);
@@ -184,11 +207,16 @@ public class AccountPageUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(gradeField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, educationPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(eduEditButton)
+                .addContainerGap())
         );
         educationPanelLayout.setVerticalGroup(
             educationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(educationPanelLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addComponent(eduEditButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(educationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(schoolNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(departmentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -212,6 +240,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         schoolNameField1.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         schoolNameField1.setForeground(new java.awt.Color(40, 55, 57));
         schoolNameField1.setText("Kurum Adı");
+        schoolNameField1.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         schoolNameField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 schoolNameField1ActionPerformed(evt);
@@ -222,6 +251,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         departmentNameField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         departmentNameField2.setForeground(new java.awt.Color(40, 55, 57));
         departmentNameField2.setText("Departman");
+        departmentNameField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         departmentNameField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 departmentNameField2ActionPerformed(evt);
@@ -232,6 +262,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         startField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         startField.setForeground(new java.awt.Color(40, 55, 57));
         startField.setText("Başlangıç Tarihi");
+        startField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         startField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startFieldActionPerformed(evt);
@@ -242,6 +273,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         finishField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         finishField.setForeground(new java.awt.Color(40, 55, 57));
         finishField.setText("Bitiş Tarihi");
+        finishField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         finishField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 finishFieldActionPerformed(evt);
@@ -252,9 +284,21 @@ public class AccountPageUI extends javax.swing.JFrame {
         jobField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jobField.setForeground(new java.awt.Color(40, 55, 57));
         jobField.setText("Meslek Adı");
+        jobField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         jobField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jobFieldActionPerformed(evt);
+            }
+        });
+
+        expEditButton.setBackground(new java.awt.Color(231, 231, 231));
+        expEditButton.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        expEditButton.setForeground(new java.awt.Color(118, 179, 157));
+        expEditButton.setText("Düzenle");
+        expEditButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        expEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                expEditButtonActionPerformed(evt);
             }
         });
 
@@ -277,11 +321,15 @@ public class AccountPageUI extends javax.swing.JFrame {
                         .addComponent(jobField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, experiencePanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(expEditButton))
         );
         experiencePanelLayout.setVerticalGroup(
             experiencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(experiencePanelLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addComponent(expEditButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(experiencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(schoolNameField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(departmentNameField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -303,6 +351,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         certifNameField.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         certifNameField.setForeground(new java.awt.Color(40, 55, 57));
         certifNameField.setText("Sertifika Adı");
+        certifNameField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         certifNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 certifNameFieldActionPerformed(evt);
@@ -313,6 +362,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         cstartField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         cstartField.setForeground(new java.awt.Color(40, 55, 57));
         cstartField.setText("Başlangıç Tarihi");
+        cstartField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         cstartField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cstartFieldActionPerformed(evt);
@@ -323,6 +373,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         cfinishField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         cfinishField.setForeground(new java.awt.Color(40, 55, 57));
         cfinishField.setText("Bitiş Tarihi");
+        cfinishField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         cfinishField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cfinishFieldActionPerformed(evt);
@@ -333,9 +384,21 @@ public class AccountPageUI extends javax.swing.JFrame {
         departmentField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         departmentField.setForeground(new java.awt.Color(40, 55, 57));
         departmentField.setText("Alındığı Yer");
+        departmentField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         departmentField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 departmentFieldActionPerformed(evt);
+            }
+        });
+
+        certEditButton.setBackground(new java.awt.Color(231, 231, 231));
+        certEditButton.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        certEditButton.setForeground(new java.awt.Color(118, 179, 157));
+        certEditButton.setText("Düzenle");
+        certEditButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        certEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                certEditButtonActionPerformed(evt);
             }
         });
 
@@ -356,11 +419,15 @@ public class AccountPageUI extends javax.swing.JFrame {
                         .addComponent(departmentField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, certifPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(certEditButton))
         );
         certifPanelLayout.setVerticalGroup(
             certifPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(certifPanelLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addComponent(certEditButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(certifPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(certifNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cstartField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -381,6 +448,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         advTitle.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         advTitle.setForeground(new java.awt.Color(40, 55, 57));
         advTitle.setText("İlan Başlığı");
+        advTitle.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         advTitle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 advTitleActionPerformed(evt);
@@ -391,6 +459,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         advOwnerField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         advOwnerField.setForeground(new java.awt.Color(40, 55, 57));
         advOwnerField.setText("Kurum");
+        advOwnerField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         advOwnerField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 advOwnerFieldActionPerformed(evt);
@@ -423,23 +492,24 @@ public class AccountPageUI extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(107, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap(113, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(appPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(appLabel, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(certifPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(experiencePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(experinceLabel))
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(nameLabel)
-                                .addComponent(educationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(educationLabel)))
-                        .addComponent(certifLabel, javax.swing.GroupLayout.Alignment.LEADING)))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(appPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(appLabel, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(certifPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(experiencePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(experinceLabel))
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(educationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(educationLabel)))
+                            .addComponent(certifLabel, javax.swing.GroupLayout.Alignment.LEADING))))
                 .addGap(131, 131, 131))
         );
         jPanel4Layout.setVerticalGroup(
@@ -448,7 +518,7 @@ public class AccountPageUI extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(nameLabel)
+                .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(educationLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -461,7 +531,7 @@ public class AccountPageUI extends javax.swing.JFrame {
                 .addComponent(certifLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(certifPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(appLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(appPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -480,7 +550,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -491,9 +561,7 @@ public class AccountPageUI extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -515,9 +583,18 @@ public class AccountPageUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_finishDateFieldActionPerformed
 
-    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+    private void eduEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eduEditButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_editButtonActionPerformed
+        edit = !edit;
+        if(edit){
+            Helpers.enableTextFields(educationPanel);
+            eduEditButton.setText("Kaydet");
+        }
+        else{
+            Helpers.disableTextFields(educationPanel);
+            eduEditButton.setText("Düzenle");
+        }
+    }//GEN-LAST:event_eduEditButtonActionPerformed
 
     private void gradeFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gradeFieldActionPerformed
         // TODO add your handling code here:
@@ -567,6 +644,36 @@ public class AccountPageUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_advOwnerFieldActionPerformed
 
+    private void nameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nameFieldActionPerformed
+
+    private void expEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expEditButtonActionPerformed
+        // TODO add your handling code here:
+        edit = !edit;
+        if(edit){
+            Helpers.enableTextFields(experiencePanel);
+            expEditButton.setText("Kaydet");
+        }
+        else{
+            Helpers.disableTextFields(experiencePanel);
+            expEditButton.setText("Düzenle");
+        }
+    }//GEN-LAST:event_expEditButtonActionPerformed
+
+    private void certEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_certEditButtonActionPerformed
+        // TODO add your handling code here:
+        edit = !edit;
+        if(edit){
+            Helpers.enableTextFields(certifPanel);
+            certEditButton.setText("Kaydet");
+        }
+        else{
+            Helpers.disableTextFields(certifPanel);
+            certEditButton.setText("Düzenle");
+        }
+    }//GEN-LAST:event_certEditButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -598,7 +705,9 @@ public class AccountPageUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AccountPageUI().setVisible(true);
+                Connection conn = null;
+               
+                new AccountPageUI(conn).setVisible(true);
             }
         });
     }
@@ -608,6 +717,7 @@ public class AccountPageUI extends javax.swing.JFrame {
     private javax.swing.JTextField advTitle;
     private javax.swing.JLabel appLabel;
     private javax.swing.JPanel appPanel;
+    private javax.swing.JButton certEditButton;
     private javax.swing.JLabel certifLabel;
     private javax.swing.JTextField certifNameField;
     private javax.swing.JPanel certifPanel;
@@ -616,9 +726,10 @@ public class AccountPageUI extends javax.swing.JFrame {
     private javax.swing.JTextField departmentField;
     private javax.swing.JTextField departmentNameField;
     private javax.swing.JTextField departmentNameField2;
-    private javax.swing.JButton editButton;
+    private javax.swing.JButton eduEditButton;
     private javax.swing.JLabel educationLabel;
     private javax.swing.JPanel educationPanel;
+    private javax.swing.JButton expEditButton;
     private javax.swing.JPanel experiencePanel;
     private javax.swing.JLabel experinceLabel;
     private javax.swing.JTextField finishDateField;
@@ -630,7 +741,7 @@ public class AccountPageUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jobField;
-    private javax.swing.JLabel nameLabel;
+    private javax.swing.JTextField nameField;
     private javax.swing.JTextField schoolNameField;
     private javax.swing.JTextField schoolNameField1;
     private javax.swing.JTextField startDateField;
