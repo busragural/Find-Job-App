@@ -6,6 +6,8 @@ package findjob;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -32,6 +34,11 @@ public class Helpers {
                 enableTextFields((Container) component);
             }
         }
+    }
+    
+    static LocalDate parseDate(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateString, formatter);
     }
     
     

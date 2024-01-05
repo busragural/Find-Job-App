@@ -244,10 +244,11 @@ public class RegisterUI extends javax.swing.JFrame {
             return;
         }
         User newUser = new User(name, surname, mail, username, password); 
-        newUser.register(conn, newUser);
-        newUser.checkEducationTable(conn);
-        newUser.checkExperienceTable(conn);
-        newUser.checkCertificateTable(conn);
+        int id = newUser.register(conn, newUser);
+        System.out.println("yeni eklenen kisinin id bilgisi: "+ id);
+        newUser.checkEducationTable(conn, id);
+        newUser.checkExperienceTable(conn, id);
+        newUser.checkCertificateTable(conn, id);
         String message = "Kayıt basarili!";
         JOptionPane.showMessageDialog(this, message);
         dispose();

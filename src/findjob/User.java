@@ -17,10 +17,21 @@ import java.sql.*;
 public class User {
     
     private String name, surname, mail, username, password;
+    private int id;
     public User() {
         
     }
     public User(String name, String surname, String mail, String username, String password){
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.mail = mail;
+        this.username = username;
+        this.password = password;
+    }
+    
+    public User(int id, String name, String surname, String mail, String username, String password){
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.mail = mail;
@@ -32,48 +43,58 @@ public class User {
         this.password = password;
     }
     
+   
     
-    
-    
-    public void register(Connection conn, User user){
-        try {
+   public int register(Connection conn, User user) {
+    int userId = -1; // Varsayılan olarak -1, işlem başarısız olursa bu değer kullanılacaktır
+
+    try {
         // SQL query to create the 'Users' table if it doesn't exist
-            String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, surname VARCHAR(20) NOT NULL, mail VARCHAR(30) NOT NULL, username VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL )";
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, surname VARCHAR(20) NOT NULL, mail VARCHAR(30) NOT NULL, username VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL )";
 
-            try (Statement statement = conn.createStatement()) {
-                // Execute the query to create the table
-                statement.executeUpdate(createTableQuery);
+        try (Statement statement = conn.createStatement()) {
+            // Execute the query to create the table
+            statement.executeUpdate(createTableQuery);
 
-                // SQL query to insert data into the 'Users' table
-                String insertQuery = "INSERT INTO Users (name, surname, mail, username, password) VALUES (?,?,?,?,?)";
+            // SQL query to insert data into the 'Users' table
+            String insertQuery = "INSERT INTO Users (name, surname, mail, username, password) VALUES (?,?,?,?,?)";
 
-                try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
-                    // Set values for the parameters
-                    preparedStatement.setString(1, user.getName());
-                    preparedStatement.setString(2, user.getSurname());
-                    preparedStatement.setString(3, user.getMail());
-                    preparedStatement.setString(4, user.getUsername());
-                    preparedStatement.setString(5, user.getPassword());
+            try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+                // Set values for the parameters
+                preparedStatement.setString(1, user.getName());
+                preparedStatement.setString(2, user.getSurname());
+                preparedStatement.setString(3, user.getMail());
+                preparedStatement.setString(4, user.getUsername());
+                preparedStatement.setString(5, user.getPassword());
 
-                    // Execute the query
-                    int rowsAffected = preparedStatement.executeUpdate();
+                // Execute the query
+                int rowsAffected = preparedStatement.executeUpdate();
 
-                    if (rowsAffected > 0) {
-                        System.out.println("User registered successfully!");
-                    } else {
-                        System.out.println("Failed to register user.");
+                if (rowsAffected > 0) {
+                    System.out.println("User registered successfully!");
+
+                    // Retrieve the generated keys (user ID)
+                    try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            userId = generatedKeys.getInt(1); // Get the generated user ID
+                        }
                     }
+                } else {
+                    System.out.println("Failed to register user.");
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+
+    return userId;
+}
+
     
     public boolean loginCheck(Connection conn, String username, String password) {
         try {
-            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+            String query = "SELECT * FROM Users WHERE username = ? AND password = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(query)) {
                 pstmt.setString(1, username);
                 pstmt.setString(2, password);
@@ -93,12 +114,13 @@ public class User {
 
         try {
             // Assuming you have columns named 'name' and 'surname' in your 'users' table
-            String query = "SELECT name, surname FROM users WHERE username = ?";
+            String query = "SELECT id, name, surname FROM users WHERE username = ?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 preparedStatement.setString(1, username);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         // Set the name and surname in the User object
+                        user.setId(resultSet.getInt("id"));
                         user.setName(resultSet.getString("name"));
                         user.setSurname(resultSet.getString("surname"));
                     }
@@ -111,103 +133,148 @@ public class User {
 
         return user;
     }
-    public void checkEducationTable(Connection conn){
+    public void checkEducationTable(Connection conn, int userId) {
         try {
             // Check if the education table exists
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet resultSet = metaData.getTables(null, null, "Education", null);
+            ResultSet resultSet = metaData.getTables(null, null, "education", null);
 
             if (!resultSet.next()) {
                 // If the table doesn't exist, create it
-                String createTableQuery = "CREATE TABLE Education ("
+                String createTableQuery = "CREATE TABLE education ("
                         + "id SERIAL PRIMARY KEY NOT NULL,"
                         + "user_id INT REFERENCES Users(id),"
                         + "school_name VARCHAR(255),"
+                        + "department VARCHAR(255),"
                         + "start_date DATE,"
-                        + "finish_Date DATE,"
+                        + "finish_date DATE,"
                         + "grade NUMERIC(3,2))";
 
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(createTableQuery);
+
+                    System.out.println("Education table created successfully!");
                 }
-        }
-        } catch (SQLException e) {
-            // Handle SQLException
-                // Handle SQLException
-            if (e.getSQLState().equals("42P07")) {
-                // This error code indicates that the table already exists
-                System.out.println("Education table already exists.");
             } else {
-                e.printStackTrace();
+                System.out.println("Education table already exists.");
             }
+
+            // Insert user_id into the Education table
+            String insertUserIdQuery = "INSERT INTO Education (user_id, school_name, department, start_date, finish_date, grade) VALUES (?, 'Default School','Default Department' , '2022-01-01', '2023-01-01', 0.0)";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(insertUserIdQuery)) {
+                preparedStatement.setInt(1, userId);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("User ID added to Education table successfully!");
+                } else {
+                    System.out.println("Failed to add User ID to Education table.");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-    
-    public void checkExperienceTable(Connection conn){
-        try{
+
+
+
+    public void checkExperienceTable(Connection conn, int userId) {
+        try {
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet resultSet = metaData.getTables(null, null, "Experience", null);
-            
-            if(!resultSet.next()){
-                String createTableQuery = "CREATE TABLE Experince("
+            ResultSet resultSet = metaData.getTables(null, null, "experience", null);
+
+            if (!resultSet.next()) {
+                // If the table doesn't exist, create it
+                String createTableQuery = "CREATE TABLE Experience("
                         + "id SERIAL PRIMARY KEY NOT NULL,"
                         + "user_id INT REFERENCES Users(id),"
                         + "company_id INT,"
-                        + "duration INT,"
+                        + "job_name VARCHAR(50),"
+                        + "start_date DATE,"
+                        + "finish_date DATE,"
                         + "department VARCHAR(50))";
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(createTableQuery);
+                    System.out.println("Experience table created successfully!");
+                }
+            } else {
+                System.out.println("Experience table already exists.");
+            }
+
+            // Insert user_id into the Experience table
+            String insertUserIdQuery = "INSERT INTO Experience (user_id, company_id, job_name, start_date, finish_date, department) VALUES (?, 0, 'default' , '2022-01-01', '2023-01-01', 'Default Department')";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(insertUserIdQuery)) {
+                preparedStatement.setInt(1, userId);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("User ID added to Experience table successfully!");
+                } else {
+                    System.out.println("Failed to add User ID to Experience table.");
                 }
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             // Handle SQLException
             if (e.getSQLState().equals("42P07")) {
                 // This error code indicates that the table already exists
-                System.out.println("Education table already exists.");
+                System.out.println("Experience table already exists.");
             } else {
                 e.printStackTrace();
             }
         }
     }
+
     
-    public void checkCertificateTable(Connection conn){
-        try{
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet resultSet = metaData.getTables(null, null, "Certificate", null);
-            
-            if(!resultSet.next()){
-                String createTableQuery = "CREATE TABLE Certificate("
-                        + "id SERIAL PRIMARY KEY NOT NULL,"
-                        + "user_id INT REFERENCES Users(id),"
-                        + "certif_name VARCHAR(50) ,"
-                        + "receipt_date DATE,"
-                        + "company_id INT,"
-                        + "duration INT)";
-                try (Statement stmt = conn.createStatement()) {
-                    stmt.executeUpdate(createTableQuery);
-                }
+public void checkCertificateTable(Connection conn, int userId) {
+    try {
+        DatabaseMetaData metaData = conn.getMetaData();
+        ResultSet resultSet = metaData.getTables(null, null, "certificate", null);
+
+        if (!resultSet.next()) {
+            // If the table doesn't exist, create it
+            String createTableQuery = "CREATE TABLE Certificate("
+                    + "id SERIAL PRIMARY KEY NOT NULL,"
+                    + "user_id INT REFERENCES Users(id),"
+                    + "certif_name VARCHAR(50),"
+                    + "receipt_date DATE,"
+                    + "company_id INT,"
+                    + "duration INT)";
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate(createTableQuery);
+                System.out.println("Certificate table created successfully!");
+            }
+        } else {
+            System.out.println("Certificate table already exists.");
+        }
+
+        // Insert user_id into the Certificate table
+        String insertUserIdQuery = "INSERT INTO Certificate (user_id, certif_name, receipt_date, company_id, duration) VALUES (?, 'Default Certificate', '2022-01-01', 0, 0)";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(insertUserIdQuery)) {
+            preparedStatement.setInt(1, userId);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("User ID added to Certificate table successfully!");
+            } else {
+                System.out.println("Failed to add User ID to Certificate table.");
             }
         }
-        catch(SQLException e){
-            // Handle SQLException
-            if (e.getSQLState().equals("42P07")) {
-                // This error code indicates that the table already exists
-                System.out.println("Education table already exists.");
-            } else {
-                e.printStackTrace();
-            }
+    } catch (SQLException e) {
+        // Handle SQLException
+        if (e.getSQLState().equals("42P07")) {
+            // This error code indicates that the table already exists
+            System.out.println("Certificate table already exists.");
+        } else {
+            e.printStackTrace();
         }
     }
-    
-    
-    
-    
-  
-     
-     
-     
-     
+}
+
+
     
 
     /**
@@ -278,6 +345,20 @@ public class User {
      */
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
     }
     
     
