@@ -172,7 +172,7 @@ public class LoginUI extends javax.swing.JFrame {
             currentUser.setUsername(username);
             System.out.println("name " + currentUser.getUsername());
             dispose();
-            new AccountPageUI(conn).setVisible(true);
+            new AdvertisementUI(conn).setVisible(true);
         }
         else{
             String message = "Invalid user.";

@@ -3,18 +3,50 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package findjob;
-
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author BusraGural
  */
 public class AdvertisementUI extends javax.swing.JFrame {
-
+    
+    private Connection conn;
+    JobAdvertisement jobAdv = new JobAdvertisement();
+    ArrayList<JobAdvertisement> jobAdvertisements;
     /**
      * Creates new form AdvertisementUI
      */
-    public AdvertisementUI() {
+    public AdvertisementUI(Connection conn) {
+        this.jobAdvertisements = new ArrayList<>();
+        this.conn = conn;
         initComponents();
+        Helpers.disableTextFields(jPanel1);
+        Helpers.enableTextFields(imagePanel);
+        //jobAdv = jobAdv.getJobAdvertisementDetails(conn, jobAdv);
+        jobAdvertisements = jobAdv.getAllJobAdvertisements(conn);
+        setjobAdvertisementFields();
+        
+        
+    }
+    
+    
+    void setjobAdvertisementFields(){
+        int id = jobAdvertisements.get(0).getCompanyId();
+        
+        try {
+            companyField.setText(jobAdvertisements.get(0).getCompanyNameById(conn, id));
+        } catch (SQLException ex) {
+            Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        advNameField.setText(jobAdvertisements.get(0).getTitle());
+        locationField.setText(jobAdvertisements.get(0).getLocation());
+        departmentNameField5.setText(jobAdvertisements.get(0).getDepartment());
+        typeField.setText(jobAdvertisements.get(0).getJobType());
+        
     }
 
     /**
@@ -30,6 +62,16 @@ public class AdvertisementUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         imagePanel = new javax.swing.JPanel();
+        jobAdvButton = new javax.swing.JRadioButton();
+        courseAdvButton = new javax.swing.JRadioButton();
+        locationLabel = new javax.swing.JLabel();
+        locationBox = new javax.swing.JComboBox<>();
+        typeBox = new javax.swing.JComboBox<>();
+        locationLabel1 = new javax.swing.JLabel();
+        companyLabel = new javax.swing.JLabel();
+        companyNameBox = new javax.swing.JComboBox<>();
+        searchField = new javax.swing.JTextField();
+        searchButton = new javax.swing.JButton();
         nameLabel = new javax.swing.JLabel();
         jobAdvPanel = new javax.swing.JPanel();
         advNameField = new javax.swing.JTextField();
@@ -53,6 +95,10 @@ public class AdvertisementUI extends javax.swing.JFrame {
         applField2 = new javax.swing.JTextField();
         typeField2 = new javax.swing.JTextField();
         submitButton3 = new javax.swing.JButton();
+        filterPanel = new javax.swing.JPanel();
+        submitFilterButton = new javax.swing.JButton();
+        goAccountPanel = new javax.swing.JPanel();
+        homeBttn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,15 +110,102 @@ public class AdvertisementUI extends javax.swing.JFrame {
 
         imagePanel.setBackground(new java.awt.Color(118, 179, 157));
 
+        jobAdvButton.setBackground(new java.awt.Color(118, 179, 157));
+        jobAdvButton.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        jobAdvButton.setText("İş İlanları");
+
+        courseAdvButton.setBackground(new java.awt.Color(118, 179, 157));
+        courseAdvButton.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        courseAdvButton.setText("Kurs İlanları");
+
+        locationLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        locationLabel.setText("Konum");
+
+        locationBox.setBackground(new java.awt.Color(221, 221, 221));
+        locationBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        locationBox.setForeground(new java.awt.Color(118, 179, 157));
+        locationBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "İstanbul", "Ankara", "Kayseri", "Çorum" }));
+
+        typeBox.setBackground(new java.awt.Color(221, 221, 221));
+        typeBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        typeBox.setForeground(new java.awt.Color(118, 179, 157));
+        typeBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tam Zamanlı", "Yarı Zamanlı", "Stajyer", " " }));
+
+        locationLabel1.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        locationLabel1.setText("Job Type");
+
+        companyLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        companyLabel.setText("Kurum");
+
+        companyNameBox.setBackground(new java.awt.Color(221, 221, 221));
+        companyNameBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        companyNameBox.setForeground(new java.awt.Color(118, 179, 157));
+        companyNameBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Monster" }));
+
+        searchField.setBackground(new java.awt.Color(231, 231, 231));
+        searchField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        searchField.setForeground(new java.awt.Color(40, 55, 57));
+
+        searchButton.setBackground(new java.awt.Color(118, 179, 157));
+        searchButton.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        searchButton.setText("🔍");
+        searchButton.setAlignmentY(0.0F);
+        searchButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout imagePanelLayout = new javax.swing.GroupLayout(imagePanel);
         imagePanel.setLayout(imagePanelLayout);
         imagePanelLayout.setHorizontalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 756, Short.MAX_VALUE)
+            .addGroup(imagePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(searchField)
+                    .addGroup(imagePanelLayout.createSequentialGroup()
+                        .addComponent(jobAdvButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(courseAdvButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(locationLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(imagePanelLayout.createSequentialGroup()
+                        .addComponent(locationLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(companyLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(imagePanelLayout.createSequentialGroup()
+                        .addComponent(searchButton)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 47, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, imagePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(searchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jobAdvButton)
+                    .addComponent(courseAdvButton)
+                    .addComponent(locationLabel)
+                    .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(companyLabel)
+                    .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(locationLabel1)
+                    .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         nameLabel.setBackground(new java.awt.Color(234, 231, 231));
@@ -87,6 +220,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         advNameField.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         advNameField.setForeground(new java.awt.Color(40, 55, 57));
         advNameField.setText("İlan Adı");
+        advNameField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         advNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 advNameFieldActionPerformed(evt);
@@ -97,6 +231,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         companyField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         companyField.setForeground(new java.awt.Color(40, 55, 57));
         companyField.setText("Kurum Adı");
+        companyField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         companyField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 companyFieldActionPerformed(evt);
@@ -107,6 +242,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         startDateField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         startDateField.setForeground(new java.awt.Color(40, 55, 57));
         startDateField.setText("İlan Açılış Tarihi");
+        startDateField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         startDateField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startDateFieldActionPerformed(evt);
@@ -117,6 +253,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         finishDateField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         finishDateField.setForeground(new java.awt.Color(40, 55, 57));
         finishDateField.setText("Bitiş Tarihi");
+        finishDateField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         finishDateField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 finishDateFieldActionPerformed(evt);
@@ -127,6 +264,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         descField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         descField.setForeground(new java.awt.Color(40, 55, 57));
         descField.setText("Açıklama");
+        descField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         descField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 descFieldActionPerformed(evt);
@@ -137,6 +275,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         locationField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         locationField.setForeground(new java.awt.Color(40, 55, 57));
         locationField.setText("Konum");
+        locationField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         locationField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 locationFieldActionPerformed(evt);
@@ -147,6 +286,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         applField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         applField.setForeground(new java.awt.Color(40, 55, 57));
         applField.setText("Başvuran Sayısı");
+        applField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         applField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 applFieldActionPerformed(evt);
@@ -157,6 +297,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         typeField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         typeField.setForeground(new java.awt.Color(40, 55, 57));
         typeField.setText("Hibrit/Yüzyüze");
+        typeField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         typeField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 typeFieldActionPerformed(evt);
@@ -172,6 +313,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         departmentNameField5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         departmentNameField5.setForeground(new java.awt.Color(40, 55, 57));
         departmentNameField5.setText("Departman");
+        departmentNameField5.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         departmentNameField5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 departmentNameField5ActionPerformed(evt);
@@ -182,6 +324,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         modelField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         modelField.setForeground(new java.awt.Color(40, 55, 57));
         modelField.setText("Tam Zamanlı");
+        modelField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         modelField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modelFieldActionPerformed(evt);
@@ -252,6 +395,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         certifAdvField.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         certifAdvField.setForeground(new java.awt.Color(40, 55, 57));
         certifAdvField.setText("İlan Adı");
+        certifAdvField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         certifAdvField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 certifAdvFieldActionPerformed(evt);
@@ -262,6 +406,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         companyField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         companyField2.setForeground(new java.awt.Color(40, 55, 57));
         companyField2.setText("Kurum Adı");
+        companyField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         companyField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 companyField2ActionPerformed(evt);
@@ -272,6 +417,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         startDateField3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         startDateField3.setForeground(new java.awt.Color(40, 55, 57));
         startDateField3.setText("İlan Açılış Tarihi");
+        startDateField3.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         startDateField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startDateField3ActionPerformed(evt);
@@ -282,6 +428,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         finishDateField3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         finishDateField3.setForeground(new java.awt.Color(40, 55, 57));
         finishDateField3.setText("Bitiş Tarihi");
+        finishDateField3.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         finishDateField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 finishDateField3ActionPerformed(evt);
@@ -292,6 +439,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         descrField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         descrField.setForeground(new java.awt.Color(40, 55, 57));
         descrField.setText("Açıklama");
+        descrField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         descrField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 descrFieldActionPerformed(evt);
@@ -302,6 +450,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         locField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         locField.setForeground(new java.awt.Color(40, 55, 57));
         locField.setText("Konum");
+        locField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         locField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 locFieldActionPerformed(evt);
@@ -312,6 +461,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         applField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         applField2.setForeground(new java.awt.Color(40, 55, 57));
         applField2.setText("Başvuran Sayısı");
+        applField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         applField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 applField2ActionPerformed(evt);
@@ -322,6 +472,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         typeField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         typeField2.setForeground(new java.awt.Color(40, 55, 57));
         typeField2.setText("Hibrit/Yüzyüze");
+        typeField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
         typeField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 typeField2ActionPerformed(evt);
@@ -384,31 +535,99 @@ public class AdvertisementUI extends javax.swing.JFrame {
                 .addGap(13, 13, 13))
         );
 
+        filterPanel.setBackground(new java.awt.Color(118, 179, 157));
+
+        submitFilterButton.setBackground(new java.awt.Color(118, 179, 157));
+        submitFilterButton.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        submitFilterButton.setText("✔");
+        submitFilterButton.setAlignmentY(0.0F);
+        submitFilterButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        submitFilterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitFilterButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
+        filterPanel.setLayout(filterPanelLayout);
+        filterPanelLayout.setHorizontalGroup(
+            filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(submitFilterButton, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+        );
+        filterPanelLayout.setVerticalGroup(
+            filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 36, Short.MAX_VALUE)
+            .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(submitFilterButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE))
+        );
+
+        goAccountPanel.setBackground(new java.awt.Color(118, 179, 157));
+
+        homeBttn.setBackground(new java.awt.Color(118, 179, 157));
+        homeBttn.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        homeBttn.setText("👤");
+        homeBttn.setAlignmentY(0.0F);
+        homeBttn.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        homeBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                homeBttnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout goAccountPanelLayout = new javax.swing.GroupLayout(goAccountPanel);
+        goAccountPanel.setLayout(goAccountPanelLayout);
+        goAccountPanelLayout.setHorizontalGroup(
+            goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+            .addGroup(goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(homeBttn, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+        );
+        goAccountPanelLayout.setVerticalGroup(
+            goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+            .addGroup(goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(homeBttn, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(107, Short.MAX_VALUE)
+                .addGap(66, 66, 66)
+                .addComponent(goAccountPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jobAdvPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(nameLabel)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(nameLabel)
+                        .addGap(599, 599, 599)
+                        .addComponent(filterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(certifAdvPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(131, 131, 131))
+                .addContainerGap(247, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(goAccountPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nameLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(filterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameLabel))
+                .addGap(8, 8, 8)
                 .addComponent(jobAdvPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
                 .addComponent(certifAdvPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(137, Short.MAX_VALUE))
+                .addGap(137, 137, 137))
         );
 
         jScrollPane1.setViewportView(jPanel4);
@@ -425,7 +644,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 6, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -436,9 +655,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -516,6 +733,20 @@ public class AdvertisementUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_typeField2ActionPerformed
 
+    private void homeBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBttnActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        new AccountPageUI(conn).setVisible(true);
+    }//GEN-LAST:event_homeBttnActionPerformed
+
+    private void submitFilterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitFilterButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_submitFilterButtonActionPerformed
+
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -547,7 +778,8 @@ public class AdvertisementUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdvertisementUI().setVisible(true);
+                Connection conn = null;
+                new AdvertisementUI(conn).setVisible(true);
             }
         });
     }
@@ -560,24 +792,38 @@ public class AdvertisementUI extends javax.swing.JFrame {
     private javax.swing.JPanel certifAdvPanel3;
     private javax.swing.JTextField companyField;
     private javax.swing.JTextField companyField2;
+    private javax.swing.JLabel companyLabel;
+    private javax.swing.JComboBox<String> companyNameBox;
+    private javax.swing.JRadioButton courseAdvButton;
     private javax.swing.JTextField departmentNameField5;
     private javax.swing.JTextField descField;
     private javax.swing.JTextField descrField;
+    private javax.swing.JPanel filterPanel;
     private javax.swing.JTextField finishDateField;
     private javax.swing.JTextField finishDateField3;
+    private javax.swing.JPanel goAccountPanel;
+    private javax.swing.JButton homeBttn;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JRadioButton jobAdvButton;
     private javax.swing.JPanel jobAdvPanel;
     private javax.swing.JTextField locField;
+    private javax.swing.JComboBox<String> locationBox;
     private javax.swing.JTextField locationField;
+    private javax.swing.JLabel locationLabel;
+    private javax.swing.JLabel locationLabel1;
     private javax.swing.JTextField modelField;
     private javax.swing.JLabel nameLabel;
+    private javax.swing.JButton searchButton;
+    private javax.swing.JTextField searchField;
     private javax.swing.JTextField startDateField;
     private javax.swing.JTextField startDateField3;
     private javax.swing.JButton submitButton;
     private javax.swing.JButton submitButton3;
+    private javax.swing.JButton submitFilterButton;
+    private javax.swing.JComboBox<String> typeBox;
     private javax.swing.JTextField typeField;
     private javax.swing.JTextField typeField2;
     // End of variables declaration//GEN-END:variables

@@ -31,7 +31,7 @@ public class Certificate {
     public void updateCertificateDetails(Connection conn, int userId, Certificate updatedCertificate) {
         try {
             int companyId = getCompanyIdByName(conn, updatedCertificate.getCompanyName());
-            String updateQuery = "UPDATE certificate SET company_id=?, certif_name=?, duration=?, receipt_date=? WHERE user_id=?";
+            String updateQuery = "UPDATE certificate SET company_id=?, certification_name=?, duration=?, receipt_date=? WHERE user_id=?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateQuery)) {
                 preparedStatement.setInt(1, companyId);
                 preparedStatement.setString(2, updatedCertificate.getCertifName());
@@ -76,7 +76,7 @@ public class Certificate {
                         certificate.setId(resultSet.getInt("id"));
                         certificate.setUserId(resultSet.getInt("user_id"));
                         certificate.setCompanyId(resultSet.getInt("company_id"));
-                        certificate.setCertifName(resultSet.getString("certif_name"));
+                        certificate.setCertifName(resultSet.getString("certification_name"));
                         certificate.setDuration(resultSet.getInt("duration"));
                         certificate.setReceiptDate(resultSet.getDate("receipt_date").toLocalDate());
                         certificate.setCompanyName(getCompanyNameById(conn, certificate.getCompanyId()));

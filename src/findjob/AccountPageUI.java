@@ -144,6 +144,8 @@ public class AccountPageUI extends javax.swing.JFrame {
         appPanel = new javax.swing.JPanel();
         advTitle = new javax.swing.JTextField();
         advOwnerField = new javax.swing.JTextField();
+        goAccountPanel = new javax.swing.JPanel();
+        homeBttn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -558,11 +560,11 @@ public class AccountPageUI extends javax.swing.JFrame {
                     .addComponent(cstartField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(receiveDateLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(certifPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(certCompanyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(certifPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(certifPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(durationLabel)
-                        .addComponent(durationField)))
+                        .addComponent(durationField))
+                    .addComponent(certCompanyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
@@ -616,12 +618,42 @@ public class AccountPageUI extends javax.swing.JFrame {
                 .addContainerGap(48, Short.MAX_VALUE))
         );
 
+        goAccountPanel.setBackground(new java.awt.Color(118, 179, 157));
+
+        homeBttn.setBackground(new java.awt.Color(118, 179, 157));
+        homeBttn.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        homeBttn.setText("◀");
+        homeBttn.setAlignmentY(0.0F);
+        homeBttn.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        homeBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                homeBttnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout goAccountPanelLayout = new javax.swing.GroupLayout(goAccountPanel);
+        goAccountPanel.setLayout(goAccountPanelLayout);
+        goAccountPanelLayout.setHorizontalGroup(
+            goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+            .addGroup(goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(homeBttn, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+        );
+        goAccountPanelLayout.setVerticalGroup(
+            goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 38, Short.MAX_VALUE)
+            .addGroup(goAccountPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(homeBttn, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGap(113, 113, 113)
+                .addGap(63, 63, 63)
+                .addComponent(goAccountPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -640,8 +672,10 @@ public class AccountPageUI extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(goAccountPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(educationLabel)
@@ -846,6 +880,12 @@ public class AccountPageUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_durationFieldActionPerformed
 
+    private void homeBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBttnActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        new AdvertisementUI(conn).setVisible(true);
+    }//GEN-LAST:event_homeBttnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -911,8 +951,10 @@ public class AccountPageUI extends javax.swing.JFrame {
     private javax.swing.JLabel experinceLabel;
     private javax.swing.JTextField finishDateField;
     private javax.swing.JTextField finishField;
+    private javax.swing.JPanel goAccountPanel;
     private javax.swing.JTextField gradeField;
     private javax.swing.JLabel gradeLabel;
+    private javax.swing.JButton homeBttn;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;

@@ -31,7 +31,7 @@ public class Experience {
     public void updateExperienceDetails(Connection conn, int userId, Experience updatedExperience){
         try {
             int companyId = getCompanyIdByName(conn, updatedExperience.getCompanyName());
-            String updateQuery = "UPDATE experience SET company_id=?, department=?, job_name=? , start_date=?, finish_date=? WHERE user_id=?";
+            String updateQuery = "UPDATE experience SET company_id=?, department=?, job_title=? , start_date=?, finish_date=? WHERE user_id=?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateQuery)) {
                  preparedStatement.setInt(1, companyId);
                 preparedStatement.setString(2, updatedExperience.getDepartment());
@@ -80,7 +80,7 @@ public class Experience {
                         exp.setUserId(resultSet.getInt("user_id"));
                         exp.setCompanyId(resultSet.getInt("company_id"));
                         exp.setDepartment(resultSet.getString("department"));
-                        exp.setJobName(resultSet.getString("job_name"));
+                        exp.setJobName(resultSet.getString("job_title"));
                         exp.setStartDate(resultSet.getDate("start_date").toLocalDate());
                         exp.setFinishDate(resultSet.getDate("finish_date").toLocalDate());
                         exp.setCompanyName(getCompanyNameById(conn, exp.getCompanyId()));
