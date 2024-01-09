@@ -50,7 +50,13 @@ public class User {
 
     try {
         // SQL query to create the 'Users' table if it doesn't exist
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY NOT NULL, name VARCHAR(20) NOT NULL, surname VARCHAR(20) NOT NULL, mail VARCHAR(30) NOT NULL, username VARCHAR(20) NOT NULL, password VARCHAR(20) NOT NULL )";
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS Users "
+                + "(id SERIAL PRIMARY KEY NOT NULL, "
+                + "name VARCHAR(20) NOT NULL, "
+                + "surname VARCHAR(20) NOT NULL, "
+                + "mail VARCHAR(30) NOT NULL, "
+                + "username VARCHAR(20) NOT NULL, "
+                + "password VARCHAR(20) NOT NULL )";
 
         try (Statement statement = conn.createStatement()) {
             // Execute the query to create the table
@@ -144,10 +150,10 @@ public class User {
                 String createTableQuery = "CREATE TABLE education ("
                         + "id SERIAL PRIMARY KEY NOT NULL,"
                         + "user_id INT REFERENCES Users(id),"
-                        + "school_name VARCHAR(255),"
-                        + "department VARCHAR(255),"
-                        + "start_date DATE,"
-                        + "finish_date DATE,"
+                        + "school_name VARCHAR(255) NOT NULL,"
+                        + "department VARCHAR(255) NOT NULL,"
+                        + "start_date DATE NOT NULL,"
+                        + "finish_date DATE NOT NULL,"
                         + "grade NUMERIC(3,2))";
 
                 try (Statement stmt = conn.createStatement()) {
@@ -190,11 +196,11 @@ public class User {
                 String createTableQuery = "CREATE TABLE Experience("
                         + "id SERIAL PRIMARY KEY NOT NULL,"
                         + "user_id INT REFERENCES Users(id),"
-                        + "company_id INT,"
-                        + "job_name VARCHAR(50),"
-                        + "start_date DATE,"
-                        + "finish_date DATE,"
-                        + "department VARCHAR(50))";
+                        + "company_id INT REFERENCES company(id) ,"
+                        + "job_name VARCHAR(50) NOT NULL,"
+                        + "start_date DATE NOT NULL,"
+                        + "finish_date DATE NOT NULL,"
+                        + "department VARCHAR(50) NOT NULL)";
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(createTableQuery);
                     System.out.println("Experience table created successfully!");
@@ -239,9 +245,9 @@ public void checkCertificateTable(Connection conn, int userId) {
                     + "id SERIAL PRIMARY KEY NOT NULL,"
                     + "user_id INT REFERENCES Users(id),"
                     + "certif_name VARCHAR(50),"
-                    + "receipt_date DATE,"
-                    + "company_id INT,"
-                    + "duration INT)";
+                    + "receipt_date DATE NOT NULL,"
+                    + "company_id INT REFERENCES company(id) ,"
+                    + "duration INT NOT NULL)";
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(createTableQuery);
                 System.out.println("Certificate table created successfully!");
