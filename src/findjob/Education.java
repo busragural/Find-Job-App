@@ -3,8 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package findjob;
+import java.awt.List;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 /**
  *
  * @author BusraGural
@@ -29,10 +31,10 @@ public class Education {
     }
     
     
-    public void updateEducationDetails(Connection conn, int userId, Education updatedEducation) {
+    public void updateEducationDetails(Connection conn, int userId, Education updatedEducation, int eduId) {
         try {
             // Önce eğitim bilgisini güncelle
-            String updateQuery = "UPDATE education SET school_name=?, department=?, grade=?, start_date=?, finish_date=? WHERE user_id=?";
+            String updateQuery = "UPDATE education SET school_name=?, department=?, grade=?, start_date=?, finish_date=? WHERE user_id=? AND id = ?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateQuery)) {
                 preparedStatement.setString(1, updatedEducation.getSchoolName());
                 preparedStatement.setString(2, updatedEducation.getDepartment());
@@ -40,9 +42,16 @@ public class Education {
                 preparedStatement.setDate(4, Date.valueOf(updatedEducation.getStartDate()));
                 preparedStatement.setDate(5, Date.valueOf(updatedEducation.getFinishDate()));
                 preparedStatement.setInt(6, userId);
-
+                preparedStatement.setInt(7, eduId);
                 preparedStatement.executeUpdate();
                 System.out.println("Education details updated successfully!");
+                System.out.println("School Name: " + updatedEducation.getSchoolName());
+            System.out.println("Department: " + updatedEducation.getDepartment());
+            System.out.println("Grade: " + updatedEducation.getGrade());
+            System.out.println("Start Date: " + updatedEducation.getStartDate());
+            System.out.println("Finish Date: " + updatedEducation.getFinishDate());
+            System.out.println("User ID: " + userId);
+            System.out.println("Education ID: " + eduId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,7 +59,9 @@ public class Education {
         }
     }
     
-    public Education getEducationDetails(Connection conn, int user_id, Education edu) {
+    public ArrayList<Education> getEducationList(Connection conn, int user_id) {
+        ArrayList<Education> educationList = new ArrayList<>();
+
         try {
             String query = "SELECT * FROM education WHERE user_id = ? ";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -58,9 +69,9 @@ public class Education {
 
                 // Execute the query
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    // Check if there is any result
-                    if (resultSet.next()) {
-                        // Assuming that the columns in the 'education' table are named appropriately
+                    // Iterate through the results and add each education entry to the list
+                    while (resultSet.next()) {
+                        Education edu = new Education();
                         edu.setId(resultSet.getInt("id"));
                         edu.setUserId(resultSet.getInt("user_id"));
                         edu.setSchoolName(resultSet.getString("school_name"));
@@ -68,6 +79,8 @@ public class Education {
                         edu.setGrade(resultSet.getDouble("grade"));
                         edu.setStartDate(resultSet.getDate("start_date").toLocalDate());
                         edu.setFinishDate(resultSet.getDate("finish_date").toLocalDate());
+
+                        educationList.add(edu);
                     }
                 }
             }
@@ -75,8 +88,8 @@ public class Education {
             e.printStackTrace();
             // Handle the SQLException
         }
-        
-        return edu;
+
+        return educationList;
     }
 
     
