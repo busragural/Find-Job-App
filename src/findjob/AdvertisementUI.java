@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 public class AdvertisementUI extends javax.swing.JFrame {
     
     private Connection conn;
-    JobAdvertisement jobAdv = new JobAdvertisement();
-    ArrayList<JobAdvertisement> jobAdvertisements;
+    Advertisement adv = new Advertisement();
+    ArrayList<Advertisement> jobAdvertisements;
     /**
      * Creates new form AdvertisementUI
      */
@@ -26,7 +26,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         Helpers.disableTextFields(jPanel1);
         Helpers.enableTextFields(imagePanel);
         //jobAdv = jobAdv.getJobAdvertisementDetails(conn, jobAdv);
-        jobAdvertisements = jobAdv.getAllJobAdvertisements(conn);
+        jobAdvertisements = adv.getAllJobAdvertisements(conn);
         setjobAdvertisementFields();
         
         
@@ -34,18 +34,8 @@ public class AdvertisementUI extends javax.swing.JFrame {
     
     
     void setjobAdvertisementFields(){
-        int id = jobAdvertisements.get(0).getCompanyId();
+       
         
-        try {
-            companyField.setText(jobAdvertisements.get(0).getCompanyNameById(conn, id));
-        } catch (SQLException ex) {
-            Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        advNameField.setText(jobAdvertisements.get(0).getTitle());
-        locationField.setText(jobAdvertisements.get(0).getLocation());
-        departmentNameField5.setText(jobAdvertisements.get(0).getDepartment());
-        typeField.setText(jobAdvertisements.get(0).getJobType());
         
     }
 
@@ -74,27 +64,10 @@ public class AdvertisementUI extends javax.swing.JFrame {
         searchButton = new javax.swing.JButton();
         nameLabel = new javax.swing.JLabel();
         jobAdvPanel = new javax.swing.JPanel();
-        advNameField = new javax.swing.JTextField();
-        companyField = new javax.swing.JTextField();
-        startDateField = new javax.swing.JTextField();
-        finishDateField = new javax.swing.JTextField();
-        descField = new javax.swing.JTextField();
-        locationField = new javax.swing.JTextField();
-        applField = new javax.swing.JTextField();
-        typeField = new javax.swing.JTextField();
         submitButton = new javax.swing.JButton();
-        departmentNameField5 = new javax.swing.JTextField();
-        modelField = new javax.swing.JTextField();
-        certifAdvPanel3 = new javax.swing.JPanel();
-        certifAdvField = new javax.swing.JTextField();
-        companyField2 = new javax.swing.JTextField();
-        startDateField3 = new javax.swing.JTextField();
-        finishDateField3 = new javax.swing.JTextField();
-        descrField = new javax.swing.JTextField();
-        locField = new javax.swing.JTextField();
-        applField2 = new javax.swing.JTextField();
-        typeField2 = new javax.swing.JTextField();
-        submitButton3 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        advTable = new javax.swing.JTable();
+        detailButton = new javax.swing.JButton();
         filterPanel = new javax.swing.JPanel();
         submitFilterButton = new javax.swing.JButton();
         goAccountPanel = new javax.swing.JPanel();
@@ -177,16 +150,14 @@ public class AdvertisementUI extends javax.swing.JFrame {
                 .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(imagePanelLayout.createSequentialGroup()
                         .addComponent(locationLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(companyLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(imagePanelLayout.createSequentialGroup()
-                        .addComponent(searchButton)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchButton))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,322 +187,63 @@ public class AdvertisementUI extends javax.swing.JFrame {
         jobAdvPanel.setBackground(new java.awt.Color(231, 231, 231));
         jobAdvPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
 
-        advNameField.setBackground(new java.awt.Color(231, 231, 231));
-        advNameField.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        advNameField.setForeground(new java.awt.Color(40, 55, 57));
-        advNameField.setText("İlan Adı");
-        advNameField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        advNameField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                advNameFieldActionPerformed(evt);
-            }
-        });
-
-        companyField.setBackground(new java.awt.Color(231, 231, 231));
-        companyField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        companyField.setForeground(new java.awt.Color(40, 55, 57));
-        companyField.setText("Kurum Adı");
-        companyField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        companyField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                companyFieldActionPerformed(evt);
-            }
-        });
-
-        startDateField.setBackground(new java.awt.Color(231, 231, 231));
-        startDateField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        startDateField.setForeground(new java.awt.Color(40, 55, 57));
-        startDateField.setText("İlan Açılış Tarihi");
-        startDateField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        startDateField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startDateFieldActionPerformed(evt);
-            }
-        });
-
-        finishDateField.setBackground(new java.awt.Color(231, 231, 231));
-        finishDateField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        finishDateField.setForeground(new java.awt.Color(40, 55, 57));
-        finishDateField.setText("Bitiş Tarihi");
-        finishDateField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        finishDateField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                finishDateFieldActionPerformed(evt);
-            }
-        });
-
-        descField.setBackground(new java.awt.Color(231, 231, 231));
-        descField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        descField.setForeground(new java.awt.Color(40, 55, 57));
-        descField.setText("Açıklama");
-        descField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        descField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                descFieldActionPerformed(evt);
-            }
-        });
-
-        locationField.setBackground(new java.awt.Color(231, 231, 231));
-        locationField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        locationField.setForeground(new java.awt.Color(40, 55, 57));
-        locationField.setText("Konum");
-        locationField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        locationField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                locationFieldActionPerformed(evt);
-            }
-        });
-
-        applField.setBackground(new java.awt.Color(231, 231, 231));
-        applField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        applField.setForeground(new java.awt.Color(40, 55, 57));
-        applField.setText("Başvuran Sayısı");
-        applField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        applField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                applFieldActionPerformed(evt);
-            }
-        });
-
-        typeField.setBackground(new java.awt.Color(231, 231, 231));
-        typeField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        typeField.setForeground(new java.awt.Color(40, 55, 57));
-        typeField.setText("Hibrit/Yüzyüze");
-        typeField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        typeField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                typeFieldActionPerformed(evt);
-            }
-        });
-
         submitButton.setBackground(new java.awt.Color(118, 179, 157));
         submitButton.setFont(new java.awt.Font("SansSerif", 1, 16)); // NOI18N
         submitButton.setForeground(new java.awt.Color(234, 231, 231));
         submitButton.setText("Başvur");
 
-        departmentNameField5.setBackground(new java.awt.Color(231, 231, 231));
-        departmentNameField5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        departmentNameField5.setForeground(new java.awt.Color(40, 55, 57));
-        departmentNameField5.setText("Departman");
-        departmentNameField5.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        departmentNameField5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                departmentNameField5ActionPerformed(evt);
+        advTable.setBackground(new java.awt.Color(234, 231, 231));
+        advTable.setForeground(new java.awt.Color(40, 55, 57));
+        advTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "İlan Adı", "Kurum Adı", "Konum", "Bitiş Tarihi", "Başvuran Sayısı"
             }
-        });
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
 
-        modelField.setBackground(new java.awt.Color(231, 231, 231));
-        modelField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        modelField.setForeground(new java.awt.Color(40, 55, 57));
-        modelField.setText("Tam Zamanlı");
-        modelField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        modelField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modelFieldActionPerformed(evt);
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
+        jScrollPane2.setViewportView(advTable);
+
+        detailButton.setBackground(new java.awt.Color(118, 179, 157));
+        detailButton.setFont(new java.awt.Font("SansSerif", 1, 16)); // NOI18N
+        detailButton.setForeground(new java.awt.Color(234, 231, 231));
+        detailButton.setText("Detay");
 
         javax.swing.GroupLayout jobAdvPanelLayout = new javax.swing.GroupLayout(jobAdvPanel);
         jobAdvPanel.setLayout(jobAdvPanelLayout);
         jobAdvPanelLayout.setHorizontalGroup(
             jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jobAdvPanelLayout.createSequentialGroup()
+                .addGap(459, 459, 459)
+                .addComponent(detailButton, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
+            .addGroup(jobAdvPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jobAdvPanelLayout.createSequentialGroup()
-                        .addComponent(advNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(startDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(finishDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jobAdvPanelLayout.createSequentialGroup()
-                        .addGroup(jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jobAdvPanelLayout.createSequentialGroup()
-                                .addComponent(companyField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(departmentNameField5, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(modelField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(descField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 727, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jobAdvPanelLayout.createSequentialGroup()
-                                .addComponent(locationField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(typeField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(applField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jScrollPane2)
                 .addContainerGap())
         );
         jobAdvPanelLayout.setVerticalGroup(
             jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jobAdvPanelLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(advNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(startDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(finishDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(companyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(departmentNameField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(modelField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(locationField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(typeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(applField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(descField, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addComponent(submitButton)
-                .addGap(13, 13, 13))
-        );
-
-        certifAdvPanel3.setBackground(new java.awt.Color(231, 231, 231));
-        certifAdvPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-
-        certifAdvField.setBackground(new java.awt.Color(231, 231, 231));
-        certifAdvField.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        certifAdvField.setForeground(new java.awt.Color(40, 55, 57));
-        certifAdvField.setText("İlan Adı");
-        certifAdvField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        certifAdvField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                certifAdvFieldActionPerformed(evt);
-            }
-        });
-
-        companyField2.setBackground(new java.awt.Color(231, 231, 231));
-        companyField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        companyField2.setForeground(new java.awt.Color(40, 55, 57));
-        companyField2.setText("Kurum Adı");
-        companyField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        companyField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                companyField2ActionPerformed(evt);
-            }
-        });
-
-        startDateField3.setBackground(new java.awt.Color(231, 231, 231));
-        startDateField3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        startDateField3.setForeground(new java.awt.Color(40, 55, 57));
-        startDateField3.setText("İlan Açılış Tarihi");
-        startDateField3.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        startDateField3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startDateField3ActionPerformed(evt);
-            }
-        });
-
-        finishDateField3.setBackground(new java.awt.Color(231, 231, 231));
-        finishDateField3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        finishDateField3.setForeground(new java.awt.Color(40, 55, 57));
-        finishDateField3.setText("Bitiş Tarihi");
-        finishDateField3.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        finishDateField3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                finishDateField3ActionPerformed(evt);
-            }
-        });
-
-        descrField.setBackground(new java.awt.Color(231, 231, 231));
-        descrField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        descrField.setForeground(new java.awt.Color(40, 55, 57));
-        descrField.setText("Açıklama");
-        descrField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        descrField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                descrFieldActionPerformed(evt);
-            }
-        });
-
-        locField.setBackground(new java.awt.Color(231, 231, 231));
-        locField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        locField.setForeground(new java.awt.Color(40, 55, 57));
-        locField.setText("Konum");
-        locField.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        locField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                locFieldActionPerformed(evt);
-            }
-        });
-
-        applField2.setBackground(new java.awt.Color(231, 231, 231));
-        applField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        applField2.setForeground(new java.awt.Color(40, 55, 57));
-        applField2.setText("Başvuran Sayısı");
-        applField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        applField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                applField2ActionPerformed(evt);
-            }
-        });
-
-        typeField2.setBackground(new java.awt.Color(231, 231, 231));
-        typeField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        typeField2.setForeground(new java.awt.Color(40, 55, 57));
-        typeField2.setText("Hibrit/Yüzyüze");
-        typeField2.setDisabledTextColor(new java.awt.Color(40, 55, 57));
-        typeField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                typeField2ActionPerformed(evt);
-            }
-        });
-
-        submitButton3.setBackground(new java.awt.Color(118, 179, 157));
-        submitButton3.setFont(new java.awt.Font("SansSerif", 1, 16)); // NOI18N
-        submitButton3.setForeground(new java.awt.Color(234, 231, 231));
-        submitButton3.setText("Başvur");
-
-        javax.swing.GroupLayout certifAdvPanel3Layout = new javax.swing.GroupLayout(certifAdvPanel3);
-        certifAdvPanel3.setLayout(certifAdvPanel3Layout);
-        certifAdvPanel3Layout.setHorizontalGroup(
-            certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(certifAdvPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(certifAdvPanel3Layout.createSequentialGroup()
-                        .addComponent(certifAdvField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(startDateField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(finishDateField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(certifAdvPanel3Layout.createSequentialGroup()
-                        .addGroup(certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(submitButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, certifAdvPanel3Layout.createSequentialGroup()
-                                .addComponent(companyField2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(applField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(descrField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 727, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, certifAdvPanel3Layout.createSequentialGroup()
-                                .addComponent(locField, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(typeField2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        certifAdvPanel3Layout.setVerticalGroup(
-            certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(certifAdvPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(certifAdvField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(startDateField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(finishDateField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(companyField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(applField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(certifAdvPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(locField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(typeField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(descrField, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(submitButton3)
+                .addGroup(jobAdvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(submitButton)
+                    .addComponent(detailButton))
                 .addGap(13, 13, 13))
         );
 
@@ -605,8 +317,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(nameLabel)
                         .addGap(599, 599, 599)
-                        .addComponent(filterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(certifAdvPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(filterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(247, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -625,9 +336,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
                     .addComponent(nameLabel))
                 .addGap(8, 8, 8)
                 .addComponent(jobAdvPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
-                .addComponent(certifAdvPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(137, 137, 137))
+                .addGap(312, 312, 312))
         );
 
         jScrollPane1.setViewportView(jPanel4);
@@ -642,9 +351,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -660,78 +367,6 @@ public class AdvertisementUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void advNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_advNameFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_advNameFieldActionPerformed
-
-    private void companyFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_companyFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_companyFieldActionPerformed
-
-    private void startDateFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startDateFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_startDateFieldActionPerformed
-
-    private void finishDateFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishDateFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_finishDateFieldActionPerformed
-
-    private void descFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_descFieldActionPerformed
-
-    private void locationFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_locationFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_locationFieldActionPerformed
-
-    private void applFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_applFieldActionPerformed
-
-    private void typeFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_typeFieldActionPerformed
-
-    private void departmentNameField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_departmentNameField5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_departmentNameField5ActionPerformed
-
-    private void modelFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modelFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_modelFieldActionPerformed
-
-    private void certifAdvFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_certifAdvFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_certifAdvFieldActionPerformed
-
-    private void companyField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_companyField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_companyField2ActionPerformed
-
-    private void startDateField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startDateField3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_startDateField3ActionPerformed
-
-    private void finishDateField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishDateField3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_finishDateField3ActionPerformed
-
-    private void descrFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descrFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_descrFieldActionPerformed
-
-    private void locFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_locFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_locFieldActionPerformed
-
-    private void applField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_applField2ActionPerformed
-
-    private void typeField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_typeField2ActionPerformed
 
     private void homeBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBttnActionPerformed
         // TODO add your handling code here:
@@ -785,46 +420,29 @@ public class AdvertisementUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField advNameField;
-    private javax.swing.JTextField applField;
-    private javax.swing.JTextField applField2;
-    private javax.swing.JTextField certifAdvField;
-    private javax.swing.JPanel certifAdvPanel3;
-    private javax.swing.JTextField companyField;
-    private javax.swing.JTextField companyField2;
+    private javax.swing.JTable advTable;
     private javax.swing.JLabel companyLabel;
     private javax.swing.JComboBox<String> companyNameBox;
     private javax.swing.JRadioButton courseAdvButton;
-    private javax.swing.JTextField departmentNameField5;
-    private javax.swing.JTextField descField;
-    private javax.swing.JTextField descrField;
+    private javax.swing.JButton detailButton;
     private javax.swing.JPanel filterPanel;
-    private javax.swing.JTextField finishDateField;
-    private javax.swing.JTextField finishDateField3;
     private javax.swing.JPanel goAccountPanel;
     private javax.swing.JButton homeBttn;
     private javax.swing.JPanel imagePanel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JRadioButton jobAdvButton;
     private javax.swing.JPanel jobAdvPanel;
-    private javax.swing.JTextField locField;
     private javax.swing.JComboBox<String> locationBox;
-    private javax.swing.JTextField locationField;
     private javax.swing.JLabel locationLabel;
     private javax.swing.JLabel locationLabel1;
-    private javax.swing.JTextField modelField;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchField;
-    private javax.swing.JTextField startDateField;
-    private javax.swing.JTextField startDateField3;
     private javax.swing.JButton submitButton;
-    private javax.swing.JButton submitButton3;
     private javax.swing.JButton submitFilterButton;
     private javax.swing.JComboBox<String> typeBox;
-    private javax.swing.JTextField typeField;
-    private javax.swing.JTextField typeField2;
     // End of variables declaration//GEN-END:variables
 }
