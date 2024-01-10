@@ -3,10 +3,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package findjob;
+import java.awt.GridLayout;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author BusraGural
@@ -16,6 +25,9 @@ public class AdvertisementUI extends javax.swing.JFrame {
     private Connection conn;
     Advertisement adv = new Advertisement();
     ArrayList<Advertisement> jobAdvertisements;
+    ArrayList<Advertisement> courseAdvertisements;
+    private DefaultTableModel advJobTableModel;
+
     /**
      * Creates new form AdvertisementUI
      */
@@ -25,18 +37,39 @@ public class AdvertisementUI extends javax.swing.JFrame {
         initComponents();
         Helpers.disableTextFields(jPanel1);
         Helpers.enableTextFields(imagePanel);
-        //jobAdv = jobAdv.getJobAdvertisementDetails(conn, jobAdv);
+        Helpers.disableTableFields(advTable);
+        
+        advJobTableModel = new DefaultTableModel(new Object[]{"İlan Adı", "Kurum Adı", "Konum", "Bitiş Tarihi", "Başvuran Sayısı"}, 0);
+        advTable.setModel(advJobTableModel);
+        
         jobAdvertisements = adv.getAllJobAdvertisements(conn);
-        setjobAdvertisementFields();
+        setjobAdvertisementFields(jobAdvertisements);
         
-        
+        courseAdvertisements = adv.getAllCourseAdvertisements(conn);
+       
     }
     
     
-    void setjobAdvertisementFields(){
-       
-        
-        
+    void setjobAdvertisementFields(ArrayList<Advertisement> jobAdvertisements) {
+        advJobTableModel.setRowCount(0);
+        for (Advertisement adv : jobAdvertisements) {
+            String name ="";
+            try {
+                name = adv.getCompanyNameById(conn, adv.getCompanyId());
+            } catch (SQLException ex) {
+                Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Object[] row = {
+                    adv.getTitle(),
+                    name, // Assuming there is a method like getCompanyName() in Advertisement class
+                    adv.getLocation(),
+                    adv.getDeadlineDate(), // Assuming getDeadlineDate() returns a formatted date
+                    adv.getAppliedCount()
+            };
+            advJobTableModel.addRow(row);
+        }
+
+        advTable.setModel(advJobTableModel);
     }
 
     /**
@@ -48,6 +81,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup2 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
@@ -84,12 +118,24 @@ public class AdvertisementUI extends javax.swing.JFrame {
         imagePanel.setBackground(new java.awt.Color(118, 179, 157));
 
         jobAdvButton.setBackground(new java.awt.Color(118, 179, 157));
+        buttonGroup2.add(jobAdvButton);
         jobAdvButton.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jobAdvButton.setText("İş İlanları");
+        jobAdvButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jobAdvButtonActionPerformed(evt);
+            }
+        });
 
         courseAdvButton.setBackground(new java.awt.Color(118, 179, 157));
+        buttonGroup2.add(courseAdvButton);
         courseAdvButton.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         courseAdvButton.setText("Kurs İlanları");
+        courseAdvButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                courseAdvButtonActionPerformed(evt);
+            }
+        });
 
         locationLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         locationLabel.setText("Konum");
@@ -219,6 +265,11 @@ public class AdvertisementUI extends javax.swing.JFrame {
         detailButton.setFont(new java.awt.Font("SansSerif", 1, 16)); // NOI18N
         detailButton.setForeground(new java.awt.Color(234, 231, 231));
         detailButton.setText("Detay");
+        detailButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detailButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jobAdvPanelLayout = new javax.swing.GroupLayout(jobAdvPanel);
         jobAdvPanel.setLayout(jobAdvPanelLayout);
@@ -382,6 +433,78 @@ public class AdvertisementUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_searchButtonActionPerformed
 
+    private void jobAdvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jobAdvButtonActionPerformed
+        // TODO add your handling code here:
+        setjobAdvertisementFields(jobAdvertisements);
+    }//GEN-LAST:event_jobAdvButtonActionPerformed
+
+    private void courseAdvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_courseAdvButtonActionPerformed
+        // TODO add your handling code here:
+        setjobAdvertisementFields(courseAdvertisements);
+    }//GEN-LAST:event_courseAdvButtonActionPerformed
+
+    private void detailButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailButtonActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = advTable.getSelectedRow();
+    
+    // Ensure a row is selected
+    if (selectedRow >= 0) {
+        // Get the Advertisement object from the selected row
+        Advertisement selectedAdvertisement = jobAdvertisements.get(selectedRow);
+
+        // Show the details dialog
+        showDetailDialog(selectedAdvertisement);
+    } else {
+        // No row is selected, you may want to handle this case (show an error message, for example)
+        System.out.println("No row selected.");
+    }
+    }//GEN-LAST:event_detailButtonActionPerformed
+
+    private void showDetailDialog(Advertisement adv) {
+    JDialog detailDialog = new JDialog(new JFrame(), "Advertisement Details", true);
+    detailDialog.setSize(600, 300);
+
+    JPanel detailPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+    detailPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+    
+//    detailPanel.add(new JLabel("Departman:"));
+//    detailPanel.add(new JLabel(adv.getDepartment()));
+    
+    detailPanel.add(new JLabel("İlan Adı:"));
+    detailPanel.add(new JLabel(adv.getTitle()));
+
+    detailPanel.add(new JLabel("Kurum Adı:"));
+    try {
+        String companyName = adv.getCompanyNameById(conn, adv.getCompanyId());
+        detailPanel.add(new JLabel(companyName));
+    } catch (SQLException ex) {
+        detailPanel.add(new JLabel("Hata: " + ex.getMessage()));
+    }
+
+  
+    JLabel descriptionLabel = new JLabel("Açıklama:");
+    JTextArea descriptionTextArea = new JTextArea(adv.getDescription());
+    descriptionTextArea.setLineWrap(true);
+    descriptionTextArea.setWrapStyleWord(true);
+    descriptionTextArea.setEditable(false);
+    JScrollPane descriptionScrollPane = new JScrollPane(descriptionTextArea);
+    detailPanel.add(descriptionLabel);
+    detailPanel.add(descriptionScrollPane);
+
+    detailPanel.add(new JLabel("İlan Açılış Tarihi:"));
+    detailPanel.add(new JLabel(adv.getOpenDate().toString()));
+
+    detailPanel.add(new JLabel("Bitiş Tarihi:"));
+    detailPanel.add(new JLabel(adv.getDeadlineDate().toString()));
+
+    detailPanel.add(new JLabel("Çalışma Modeli:"));
+    detailPanel.add(new JLabel(adv.getWorkingModel()));
+
+    detailDialog.add(detailPanel);
+    detailDialog.setLocationRelativeTo(null);
+    detailDialog.setVisible(true);
+}
+    
     /**
      * @param args the command line arguments
      */
@@ -421,6 +544,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable advTable;
+    private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JLabel companyLabel;
     private javax.swing.JComboBox<String> companyNameBox;
     private javax.swing.JRadioButton courseAdvButton;

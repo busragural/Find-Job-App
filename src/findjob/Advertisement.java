@@ -43,10 +43,77 @@ public class Advertisement {
         
     }
     
-    public ArrayList<Advertisement> getAllJobAdvertisements(Connection conn){
-         ArrayList<Advertisement> advList = new ArrayList<>();
+    public ArrayList<Advertisement> getAllJobAdvertisements(Connection conn) {
+        ArrayList<Advertisement> advList = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM active_advertisements WHERE is_job = true";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Advertisement adv = new Advertisement();
+                        adv.setId(resultSet.getInt("id"));
+                        adv.setCompanyId(resultSet.getInt("company_id"));
+                        adv.setAppliedCount(resultSet.getInt("applied_count"));
+                        adv.setTitle(resultSet.getString("title"));
+                        adv.setDescription(resultSet.getString("description"));
+                        adv.setLocation(resultSet.getString("location"));
+                        adv.setDepartment(resultSet.getString("department"));
+                        adv.setWorkingModel(resultSet.getString("working_model"));
+                        adv.setType(resultSet.getString("type"));
+                        adv.setIsActive(resultSet.getBoolean("is_active"));
+                        adv.setIsJob(resultSet.getBoolean("is_job"));
+                        adv.setOpenDate(resultSet.getDate("open_date").toLocalDate());
+                        adv.setDeadlineDate(resultSet.getDate("deadline_date").toLocalDate());
+
+                        advList.add(adv);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle the SQLException
+        }
+
         return advList;
     }
+    
+    public ArrayList<Advertisement> getAllCourseAdvertisements(Connection conn) {
+        ArrayList<Advertisement> advList = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM active_advertisements WHERE is_job = false";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Advertisement adv = new Advertisement();
+                        adv.setId(resultSet.getInt("id"));
+                        adv.setCompanyId(resultSet.getInt("company_id"));
+                        adv.setAppliedCount(resultSet.getInt("applied_count"));
+                        adv.setTitle(resultSet.getString("title"));
+                        adv.setDescription(resultSet.getString("description"));
+                        adv.setLocation(resultSet.getString("location"));
+                        adv.setDepartment(resultSet.getString("department"));
+                        adv.setWorkingModel(resultSet.getString("working_model"));
+                        adv.setType(resultSet.getString("type"));
+                        adv.setIsActive(resultSet.getBoolean("is_active"));
+                        adv.setIsJob(resultSet.getBoolean("is_job"));
+                        adv.setOpenDate(resultSet.getDate("open_date").toLocalDate());
+                        adv.setDeadlineDate(resultSet.getDate("deadline_date").toLocalDate());
+
+                        advList.add(adv);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle the SQLException
+        }
+
+        return advList;
+    }
+    
+    
     
     public String getCompanyNameById(Connection conn, int companyId) throws SQLException {
         
