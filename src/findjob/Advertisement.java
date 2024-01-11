@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.sql.ResultSetMetaData;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 /**
  *
@@ -23,7 +24,7 @@ public class Advertisement {
     private boolean isJob;
     private LocalDate openDate, deadlineDate;
 
-    public Advertisement(int id, int companyId, int appliedCount, String title, String description, String location, String department, String workingModel, String type, boolean isActive, boolean isJob, LocalDate openDate, LocalDate deadlineDate) {
+    public Advertisement(int id, int companyId,String title,  String description,String location,LocalDate openDate, LocalDate deadlineDate, int appliedCount,boolean isActive,boolean isJob, String type ,String department,String workingModel) {
         this.id = id;
         this.companyId = companyId;
         this.appliedCount = appliedCount;
@@ -44,50 +45,119 @@ public class Advertisement {
         
     }
     
-  
     public ArrayList<Advertisement> getFilteredAdvertisements(Connection conn, boolean isJob, String location, String type, int selectedCompany, String selectedWorkType) {
-    ArrayList<Advertisement> filteredAdvertisements = new ArrayList<>();
+        ArrayList<Advertisement> filteredAdvertisements = new ArrayList<>();
 
-    try {
-        // Build the SQL query based on the provided filters
-        String sql = "SELECT * FROM filter_advertisements(?, ?, ?, ?, ?)";
-        System.out.println("isjob: " + isJob);
-        System.out.println("loca" + location);
-        System.out.println("type" + type);
-        System.out.println("comp " + selectedCompany);
-        System.out.println("work" + selectedWorkType);
+        try {
+            // Build the SQL query based on the provided filters
+            String sql = "SELECT * FROM filter_advertisements(?, ?, ?, ?, ?)";
+            System.out.println("isjob: " + isJob);
+            System.out.println("loca" + location);
+            System.out.println("type" + type);
+            System.out.println("comp " + selectedCompany);
+            System.out.println("work" + selectedWorkType);
+            
+            
+            // Prepare the statement
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                // Set parameters
+                stmt.setBoolean(1, isJob);
+                stmt.setString(2, type);
+                stmt.setInt(3, selectedCompany);
+                stmt.setString(4, location);
+                stmt.setString(5, selectedWorkType);
 
-        // Prepare the statement
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            // Set parameters
-            stmt.setBoolean(1, isJob);
-            stmt.setString(2, type);
-            stmt.setInt(3, selectedCompany);
-            stmt.setString(4, location);
-            stmt.setString(5, selectedWorkType);
+                // Execute the query
+                try (ResultSet rs = stmt.executeQuery()) {
+                    // Check if there is a result
+                    while (rs.next()) {
+                        // Inside the while loop after getting the array result as a string
+                        String arrayResultString = rs.getString(1);
+                        System.out.println(arrayResultString);
 
-            // Execute the query
-            try (ResultSet rs = stmt.executeQuery()) {
-                // Check if there is a result
-                if (rs.next()) {
-                    // Get the array result
-                    Array arrayResult = rs.getArray(1); // Assuming the array is the first column
+                        // Check if the result string is not null or empty
+                        if (arrayResultString != null && !arrayResultString.isEmpty()) {
+                            // Remove leading and trailing curly braces
+                            arrayResultString = arrayResultString.replaceAll("[{}\"]", "");
 
-                    // Convert the array to Java array
-                    Advertisement[] resultArray = (Advertisement[]) arrayResult.getArray();
+                            // Split the string into individual elements based on parentheses
+                            String[] elements = arrayResultString.split("\\),");
 
-                    // Convert the array to a List
-                    filteredAdvertisements = new ArrayList<>(Arrays.asList(resultArray));
+                            for (String element : elements) {
+                                // Remove all parentheses
+                                element = element.replaceAll("[()]", "");
+
+                                // Split values
+                                String[] values = element.split(",");
+
+                                // Additional cleanup to remove leading/trailing backslashes
+                                for (int i = 0; i < values.length; i++) {
+                                    values[i] = values[i].replaceAll("^\\\\+|\\\\+$", "");
+                                }
+
+                                // Convert values to Advertisement object properties
+                                try {
+                                    Advertisement advertisement;
+
+                                    if (values.length == 13) {
+                                        // For job advertisements with 13 columns
+                                        advertisement = new Advertisement(
+                                                Integer.parseInt(values[0].trim()),
+                                                Integer.parseInt(values[1].trim()),
+                                                values[2].trim(),
+                                                values[3].trim(),
+                                                values[4].trim(),
+                                                LocalDate.parse(values[5].trim()),
+                                                LocalDate.parse(values[6].trim()),
+                                                Integer.parseInt(values[7].trim()),
+                                                Boolean.parseBoolean(values[8].trim()),
+                                                Boolean.parseBoolean(values[9].trim()),
+                                                values[10].trim(),
+                                                values[11].trim(),
+                                                values[12].trim()
+                                        );
+                                    } else if (values.length == 11) {
+                                        // For course advertisements with 11 columns
+                                        advertisement = new Advertisement(
+                                                Integer.parseInt(values[0].trim()),
+                                                Integer.parseInt(values[1].trim()),
+                                                values[2].trim(),
+                                                values[3].trim(),
+                                                values[4].trim(),
+                                                LocalDate.parse(values[5].trim()),
+                                                LocalDate.parse(values[6].trim()),
+                                                Integer.parseInt(values[7].trim()),
+                                                Boolean.parseBoolean(values[8].trim()),
+                                                Boolean.parseBoolean(values[9].trim()),
+                                                values[10].trim(),
+                                                null,
+                                                null
+                                        );
+                                    } else {
+                                        // Handle other cases or throw an exception
+                                        throw new IllegalArgumentException("Unexpected number of columns: " + values.length);
+                                    }
+
+                                    filteredAdvertisements.add(advertisement);
+                                    System.out.println(advertisement);
+                                } catch (NumberFormatException | DateTimeParseException ex) {
+                                    // Handle parsing errors gracefully
+                                    System.err.println("Error parsing values: " + Arrays.toString(values));
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception according to your needs
         }
-    } catch (SQLException e) {
-        e.printStackTrace(); // Handle the exception according to your needs
+
+        return filteredAdvertisements;
     }
 
-    return filteredAdvertisements;
-}
-    
+
     
     
     

@@ -480,9 +480,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         String selectedWorkType = (String) workTypeBox.getSelectedItem();
         System.out.println(selectedWorkType);
         
-        
-        
-        
+
         if(selectedCompany.compareTo("Hepsi") == 0 && selectedLocation.compareTo("Hepsi") == 0  && selectedType.compareTo("Hepsi") == 0 ){
             if(advSelected ){
                 setjobAdvertisementFields(jobAdvertisements);
@@ -492,6 +490,21 @@ public class AdvertisementUI extends javax.swing.JFrame {
             }
         }
         else{
+            if (id == -1) {
+                id = 0;
+            }
+            if ("Hepsi".equals(selectedLocation)) {
+                selectedLocation = null;
+            }
+
+            if ("Hepsi".equals(selectedType)) {
+                selectedType = null;
+            }
+            if("Hepsi".equals(selectedWorkType)){
+                selectedWorkType = null;
+            }
+            
+           
             filteredAdvertisements = adv.getFilteredAdvertisements(conn, advSelected, selectedLocation, selectedType, id, selectedWorkType);
             setjobAdvertisementFields(filteredAdvertisements);
         }
@@ -523,9 +536,16 @@ public class AdvertisementUI extends javax.swing.JFrame {
         int selectedRow = advTable.getSelectedRow();
 
         // Ensure a row is selected
-        if (selectedRow >= 0) {
+        if (selectedRow >= 0 ) {
+            Advertisement selectedAdvertisement;
             // Get the Advertisement object from the selected row
-            Advertisement selectedAdvertisement = jobAdvertisements.get(selectedRow);
+            if(filteredAdvertisements == null){
+                selectedAdvertisement = jobAdvertisements.get(selectedRow);
+            }
+            else{
+                selectedAdvertisement = filteredAdvertisements.get(selectedRow);
+            }
+            
 
             // Show the details dialog
             showDetailDialog(selectedAdvertisement);
