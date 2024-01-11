@@ -5,6 +5,7 @@
 package findjob;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,14 +14,14 @@ import java.time.LocalDate;
 public class Certificate {
      
     private int id, userId, companyId, duration;
-    private LocalDate receiptDate;
+    private Date receiptDate;
     private String certifName, companyName ;
 
     public Certificate(){
         
     }
     
-    public Certificate(int userId, String certifName, String companyName, int duration, LocalDate receiptDate ){
+    public Certificate(int userId, String certifName, String companyName, int duration, Date receiptDate ){
         this.userId = userId;
         this.certifName = certifName;
         this.companyName = companyName;
@@ -28,16 +29,18 @@ public class Certificate {
         this.receiptDate = receiptDate;
     }
       
-    public void updateCertificateDetails(Connection conn, int userId, Certificate updatedCertificate) {
+    public void updateCertificateDetails(Connection conn, int userId, Certificate updatedCertificate, int certId) {
         try {
             int companyId = getCompanyIdByName(conn, updatedCertificate.getCompanyName());
-            String updateQuery = "UPDATE certificate SET company_id=?, certification_name=?, duration=?, receipt_date=? WHERE user_id=?";
+            
+            String updateQuery = "UPDATE certificate SET company_id=?, certification_name=?, duration=?, receipt_date=? WHERE user_id=? AND id=?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateQuery)) {
                 preparedStatement.setInt(1, companyId);
                 preparedStatement.setString(2, updatedCertificate.getCertifName());
                 preparedStatement.setInt(3, updatedCertificate.getDuration());
-                preparedStatement.setDate(4, Date.valueOf(updatedCertificate.getReceiptDate()));
+                preparedStatement.setDate(4, updatedCertificate.getReceiptDate());
                 preparedStatement.setInt(5, userId);
+                preparedStatement.setInt(6, certId);
 
                 preparedStatement.executeUpdate();
                 System.out.println("Certificate details updated successfully!");
@@ -78,7 +81,7 @@ public class Certificate {
                         certificate.setCompanyId(resultSet.getInt("company_id"));
                         certificate.setCertifName(resultSet.getString("certification_name"));
                         certificate.setDuration(resultSet.getInt("duration"));
-                        certificate.setReceiptDate(resultSet.getDate("receipt_date").toLocalDate());
+                        certificate.setReceiptDate(resultSet.getDate("receipt_date"));
                         certificate.setCompanyName(getCompanyNameById(conn, certificate.getCompanyId()));
                     }
                 }
@@ -164,14 +167,14 @@ public class Certificate {
     /**
      * @return the receiptDate
      */
-    public LocalDate getReceiptDate() {
+    public Date getReceiptDate() {
         return receiptDate;
     }
 
     /**
      * @param receiptDate the receiptDate to set
      */
-    public void setReceiptDate(LocalDate receiptDate) {
+    public void setReceiptDate(Date receiptDate) {
         this.receiptDate = receiptDate;
     }
 
@@ -201,6 +204,60 @@ public class Certificate {
      */
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    ArrayList<Certificate> getCertificateList(Connection conn, int user_id) {
+        ArrayList<Certificate> certificateList = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM certificate WHERE user_id = ? ";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                preparedStatement.setInt(1, user_id);
+
+                // Execute the query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    // Iterate through the results and add each education entry to the list
+                    while (resultSet.next()) {
+                        Certificate cert = new Certificate();
+                        cert.setId(resultSet.getInt("id"));
+                        cert.setUserId(resultSet.getInt("user_id"));
+                        cert.setCompanyId(resultSet.getInt("company_id"));
+                        cert.setCertifName(resultSet.getString("certification_name"));
+                        cert.setDuration(resultSet.getInt("duration"));
+                        cert.setReceiptDate(resultSet.getDate("receipt_date"));
+                        cert.setCompanyName(getCompanyNameById(conn, cert.getCompanyId()));
+
+                        certificateList.add(cert);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle the SQLException
+        }
+
+        return certificateList;
+    }
+
+    void addCertificate(Connection conn, int user_id, Certificate tmp) {
+        String sql = "INSERT INTO certificate (user_id, company_id, certification_name, receipt_date, duration) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            int compId = getCompanyIdByName(conn, tmp.getCompanyName());
+            
+            preparedStatement.setInt(1, user_id);
+            preparedStatement.setInt(2, compId);
+            preparedStatement.setString(3, tmp.getCertifName());
+            preparedStatement.setDate(4, tmp.getReceiptDate());
+            preparedStatement.setInt(5, tmp.getDuration());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // SQL hatası oluştuğunda burada işlem yapabilirsiniz.
+            e.printStackTrace();
+            // Hata mesajını veya kullanıcıya gösterilecek mesajı belirleyebilirsiniz.
+            throw new RuntimeException("Eğitim bilgisi eklenirken bir hata oluştu.");
+        }
     }
       
 }

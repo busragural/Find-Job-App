@@ -5,6 +5,8 @@
 package findjob;
 import java.awt.List;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 /**
@@ -15,13 +17,13 @@ public class Education {
     private int id, userId;
     private String schoolName, department;
     private double grade;
-    private LocalDate startDate, finishDate;
+    private Date startDate, finishDate;
 
     public Education(){
         
     }
    
-    public Education(int userId,String schoolName, String department, double grade, LocalDate startDate, LocalDate finishDate){
+    public Education(int userId,String schoolName, String department, double grade, Date startDate, Date finishDate){
         this.userId = userId;
         this.schoolName = schoolName;
         this.department = department;
@@ -39,19 +41,19 @@ public class Education {
                 preparedStatement.setString(1, updatedEducation.getSchoolName());
                 preparedStatement.setString(2, updatedEducation.getDepartment());
                 preparedStatement.setDouble(3, updatedEducation.getGrade());
-                preparedStatement.setDate(4, Date.valueOf(updatedEducation.getStartDate()));
-                preparedStatement.setDate(5, Date.valueOf(updatedEducation.getFinishDate()));
+                preparedStatement.setDate(4, updatedEducation.getStartDate());
+                preparedStatement.setDate(5, updatedEducation.getFinishDate());
                 preparedStatement.setInt(6, userId);
                 preparedStatement.setInt(7, eduId);
                 preparedStatement.executeUpdate();
                 System.out.println("Education details updated successfully!");
                 System.out.println("School Name: " + updatedEducation.getSchoolName());
-            System.out.println("Department: " + updatedEducation.getDepartment());
-            System.out.println("Grade: " + updatedEducation.getGrade());
-            System.out.println("Start Date: " + updatedEducation.getStartDate());
-            System.out.println("Finish Date: " + updatedEducation.getFinishDate());
-            System.out.println("User ID: " + userId);
-            System.out.println("Education ID: " + eduId);
+                System.out.println("Department: " + updatedEducation.getDepartment());
+                System.out.println("Grade: " + updatedEducation.getGrade());
+                System.out.println("Start Date: " + updatedEducation.getStartDate());
+                System.out.println("Finish Date: " + updatedEducation.getFinishDate());
+                System.out.println("User ID: " + userId);
+                System.out.println("Education ID bu: " + eduId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,8 +79,8 @@ public class Education {
                         edu.setSchoolName(resultSet.getString("school_name"));
                         edu.setDepartment(resultSet.getString("department"));
                         edu.setGrade(resultSet.getDouble("grade"));
-                        edu.setStartDate(resultSet.getDate("start_date").toLocalDate());
-                        edu.setFinishDate(resultSet.getDate("finish_date").toLocalDate());
+                        edu.setStartDate(resultSet.getDate("start_date"));
+                        edu.setFinishDate(resultSet.getDate("finish_date"));
 
                         educationList.add(edu);
                     }
@@ -152,28 +154,28 @@ public class Education {
     /**
      * @return the startDate
      */
-    public LocalDate getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
     /**
      * @param startDate the startDate to set
      */
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
     /**
      * @return the finishDate
      */
-    public LocalDate getFinishDate() {
+    public Date getFinishDate() {
         return finishDate;
     }
 
     /**
      * @param finishDate the finishDate to set
      */
-    public void setFinishDate(LocalDate finishDate) {
+    public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
     }
 
@@ -189,6 +191,26 @@ public class Education {
      */
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    void addEducation(Connection conn, int userId, Education updatedEducation){
+        String sql = "INSERT INTO education (user_id, school_name, department, grade, start_date, finish_date) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {    
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setString(2, updatedEducation.getSchoolName());
+            preparedStatement.setString(3, updatedEducation.getDepartment());
+            preparedStatement.setDouble(4, updatedEducation.getGrade());
+            preparedStatement.setDate(5, updatedEducation.getStartDate());
+            preparedStatement.setDate(6, updatedEducation.getFinishDate());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // SQL hatası oluştuğunda burada işlem yapabilirsiniz.
+            e.printStackTrace();
+            // Hata mesajını veya kullanıcıya gösterilecek mesajı belirleyebilirsiniz.
+            throw new RuntimeException("Eğitim bilgisi eklenirken bir hata oluştu.");
+        }
     }
 
 }

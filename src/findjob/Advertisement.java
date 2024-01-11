@@ -3,14 +3,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package findjob;
-
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
+import java.sql.ResultSetMetaData;
+import java.util.Arrays;
 /**
  *
  * @author BusraGural
@@ -43,11 +44,58 @@ public class Advertisement {
         
     }
     
+  
+    public ArrayList<Advertisement> getFilteredAdvertisements(Connection conn, boolean isJob, String location, String type, int selectedCompany, String selectedWorkType) {
+    ArrayList<Advertisement> filteredAdvertisements = new ArrayList<>();
+
+    try {
+        // Build the SQL query based on the provided filters
+        String sql = "SELECT * FROM filter_advertisements(?, ?, ?, ?, ?)";
+        System.out.println("isjob: " + isJob);
+        System.out.println("loca" + location);
+        System.out.println("type" + type);
+        System.out.println("comp " + selectedCompany);
+        System.out.println("work" + selectedWorkType);
+
+        // Prepare the statement
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Set parameters
+            stmt.setBoolean(1, isJob);
+            stmt.setString(2, type);
+            stmt.setInt(3, selectedCompany);
+            stmt.setString(4, location);
+            stmt.setString(5, selectedWorkType);
+
+            // Execute the query
+            try (ResultSet rs = stmt.executeQuery()) {
+                // Check if there is a result
+                if (rs.next()) {
+                    // Get the array result
+                    Array arrayResult = rs.getArray(1); // Assuming the array is the first column
+
+                    // Convert the array to Java array
+                    Advertisement[] resultArray = (Advertisement[]) arrayResult.getArray();
+
+                    // Convert the array to a List
+                    filteredAdvertisements = new ArrayList<>(Arrays.asList(resultArray));
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Handle the exception according to your needs
+    }
+
+    return filteredAdvertisements;
+}
+    
+    
+    
+    
     public ArrayList<Advertisement> getAllJobAdvertisements(Connection conn) {
         ArrayList<Advertisement> advList = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM active_advertisements WHERE is_job = true";
+            String query = "SELECT * FROM active_job_advertisements";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
@@ -82,7 +130,7 @@ public class Advertisement {
         ArrayList<Advertisement> advList = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM active_advertisements WHERE is_job = false";
+            String query = "SELECT * FROM active_course_advertisements ";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
@@ -128,7 +176,22 @@ public class Advertisement {
             }
         }
         return companyName;
-    }   
+    }  
+    
+    public int getCompanyIdByName(Connection conn, String companyName) throws SQLException {
+        int companyId = -1; // Varsayılan olarak -1, eğer bir hata olursa kontrol etmek için.
+
+        String query = "SELECT id FROM company WHERE name=?";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, companyName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    companyId = resultSet.getInt("id");
+                }
+            }
+        }
+        return companyId;
+    }
     
     
     /**

@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,6 +27,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
     Advertisement adv = new Advertisement();
     ArrayList<Advertisement> jobAdvertisements;
     ArrayList<Advertisement> courseAdvertisements;
+    ArrayList<Advertisement> filteredAdvertisements = new  ArrayList<>();
     private DefaultTableModel advJobTableModel;
 
     /**
@@ -91,11 +93,13 @@ public class AdvertisementUI extends javax.swing.JFrame {
         locationLabel = new javax.swing.JLabel();
         locationBox = new javax.swing.JComboBox<>();
         typeBox = new javax.swing.JComboBox<>();
-        locationLabel1 = new javax.swing.JLabel();
+        typeLabel = new javax.swing.JLabel();
         companyLabel = new javax.swing.JLabel();
         companyNameBox = new javax.swing.JComboBox<>();
         searchField = new javax.swing.JTextField();
         searchButton = new javax.swing.JButton();
+        workingTypeLabel = new javax.swing.JLabel();
+        workTypeBox = new javax.swing.JComboBox<>();
         nameLabel = new javax.swing.JLabel();
         jobAdvPanel = new javax.swing.JPanel();
         submitButton = new javax.swing.JButton();
@@ -143,15 +147,15 @@ public class AdvertisementUI extends javax.swing.JFrame {
         locationBox.setBackground(new java.awt.Color(221, 221, 221));
         locationBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         locationBox.setForeground(new java.awt.Color(118, 179, 157));
-        locationBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "İstanbul", "Ankara", "Kayseri", "Çorum" }));
+        locationBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hepsi", "İstanbul", "Ankara", "Kayseri", "Çorum", " " }));
 
         typeBox.setBackground(new java.awt.Color(221, 221, 221));
         typeBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         typeBox.setForeground(new java.awt.Color(118, 179, 157));
-        typeBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tam Zamanlı", "Yarı Zamanlı", "Stajyer", " " }));
+        typeBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hepsi", "Tam Zamanlı", "Yarı Zamanlı", "Stajyer", " " }));
 
-        locationLabel1.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        locationLabel1.setText("Job Type");
+        typeLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        typeLabel.setText("Tür");
 
         companyLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         companyLabel.setText("Kurum");
@@ -159,7 +163,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
         companyNameBox.setBackground(new java.awt.Color(221, 221, 221));
         companyNameBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         companyNameBox.setForeground(new java.awt.Color(118, 179, 157));
-        companyNameBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Monster" }));
+        companyNameBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hepsi", "Monster", "Company4", " " }));
 
         searchField.setBackground(new java.awt.Color(231, 231, 231));
         searchField.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
@@ -176,33 +180,46 @@ public class AdvertisementUI extends javax.swing.JFrame {
             }
         });
 
+        workingTypeLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        workingTypeLabel.setText("Çalışma Şekli");
+
+        workTypeBox.setBackground(new java.awt.Color(221, 221, 221));
+        workTypeBox.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
+        workTypeBox.setForeground(new java.awt.Color(118, 179, 157));
+        workTypeBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hepsi", "Remote", "Hibrit", "Yüzyüze", " " }));
+
         javax.swing.GroupLayout imagePanelLayout = new javax.swing.GroupLayout(imagePanel);
         imagePanel.setLayout(imagePanelLayout);
         imagePanelLayout.setHorizontalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(imagePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(searchField)
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(imagePanelLayout.createSequentialGroup()
-                        .addComponent(jobAdvButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(courseAdvButton)
-                        .addGap(18, 18, 18)
+                        .addGap(23, 23, 23)
                         .addComponent(locationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(imagePanelLayout.createSequentialGroup()
-                        .addComponent(locationLabel1)
+                        .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(typeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(imagePanelLayout.createSequentialGroup()
                         .addComponent(companyLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(searchButton))
+                        .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(workingTypeLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(workTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(imagePanelLayout.createSequentialGroup()
+                        .addComponent(searchButton)
+                        .addGap(144, 144, 144)
+                        .addComponent(jobAdvButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(courseAdvButton)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         imagePanelLayout.setVerticalGroup(
@@ -210,18 +227,24 @@ public class AdvertisementUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, imagePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(searchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jobAdvButton)
+                        .addComponent(courseAdvButton))
+                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jobAdvButton)
-                    .addComponent(courseAdvButton)
                     .addComponent(locationLabel)
                     .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(companyLabel)
-                    .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(locationLabel1)
-                    .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(typeLabel)
+                    .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(workingTypeLabel)
+                        .addComponent(workTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(companyLabel)
+                            .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
 
@@ -280,7 +303,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
                 .addComponent(detailButton, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(submitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(58, Short.MAX_VALUE))
             .addGroup(jobAdvPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2)
@@ -427,6 +450,52 @@ public class AdvertisementUI extends javax.swing.JFrame {
 
     private void submitFilterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitFilterButtonActionPerformed
         // TODO add your handling code here:
+        boolean advSelected = true;
+        
+        if (jobAdvButton.isSelected()) {
+            advSelected = true;
+            System.out.println("Job Advertisement seçildi.");
+        } else if (courseAdvButton.isSelected()) {
+            advSelected = false;
+            System.out.println("Course Advertisement seçildi.");
+        } else {
+            System.out.println("Hiçbiri seçilmedi.");
+        }
+        
+        String selectedLocation = (String) locationBox.getSelectedItem();
+        System.out.println(selectedLocation);
+        String selectedType= (String) typeBox.getSelectedItem();
+        System.out.println(selectedType);
+        String selectedCompany= (String) companyNameBox.getSelectedItem();
+        System.out.println(selectedCompany);
+        
+        
+        int id = 0;
+        try {
+            id = adv.getCompanyIdByName(conn, selectedCompany);
+        } catch (SQLException ex) {
+            Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        String selectedWorkType = (String) workTypeBox.getSelectedItem();
+        System.out.println(selectedWorkType);
+        
+        
+        
+        
+        if(selectedCompany.compareTo("Hepsi") == 0 && selectedLocation.compareTo("Hepsi") == 0  && selectedType.compareTo("Hepsi") == 0 ){
+            if(advSelected ){
+                setjobAdvertisementFields(jobAdvertisements);
+            }
+            else{
+                setjobAdvertisementFields(courseAdvertisements);
+            }
+        }
+        else{
+            filteredAdvertisements = adv.getFilteredAdvertisements(conn, advSelected, selectedLocation, selectedType, id, selectedWorkType);
+            setjobAdvertisementFields(filteredAdvertisements);
+        }
+        
     }//GEN-LAST:event_submitFilterButtonActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
@@ -435,75 +504,81 @@ public class AdvertisementUI extends javax.swing.JFrame {
 
     private void jobAdvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jobAdvButtonActionPerformed
         // TODO add your handling code here:
-        setjobAdvertisementFields(jobAdvertisements);
+        String[] newItems = {"Hepsi","Tam Zamanlı", "Yarı Zamanlı", "Stajyer"};
+        typeBox.setModel(new DefaultComboBoxModel<>(newItems));
+         workTypeBox.setEnabled(true);
     }//GEN-LAST:event_jobAdvButtonActionPerformed
 
     private void courseAdvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_courseAdvButtonActionPerformed
         // TODO add your handling code here:
-        setjobAdvertisementFields(courseAdvertisements);
+        String[] newItems = {"Hepsi","Online", "Yüzyüze"};
+        typeBox.setModel(new DefaultComboBoxModel<>(newItems));
+        workTypeBox.setEnabled(false);
+        
+        
     }//GEN-LAST:event_courseAdvButtonActionPerformed
 
     private void detailButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailButtonActionPerformed
         // TODO add your handling code here:
         int selectedRow = advTable.getSelectedRow();
-    
-    // Ensure a row is selected
-    if (selectedRow >= 0) {
-        // Get the Advertisement object from the selected row
-        Advertisement selectedAdvertisement = jobAdvertisements.get(selectedRow);
 
-        // Show the details dialog
-        showDetailDialog(selectedAdvertisement);
-    } else {
-        // No row is selected, you may want to handle this case (show an error message, for example)
-        System.out.println("No row selected.");
-    }
+        // Ensure a row is selected
+        if (selectedRow >= 0) {
+            // Get the Advertisement object from the selected row
+            Advertisement selectedAdvertisement = jobAdvertisements.get(selectedRow);
+
+            // Show the details dialog
+            showDetailDialog(selectedAdvertisement);
+        } else {
+            // No row is selected, you may want to handle this case (show an error message, for example)
+            System.out.println("No row selected.");
+        }
     }//GEN-LAST:event_detailButtonActionPerformed
 
     private void showDetailDialog(Advertisement adv) {
-    JDialog detailDialog = new JDialog(new JFrame(), "Advertisement Details", true);
-    detailDialog.setSize(600, 300);
+        JDialog detailDialog = new JDialog(new JFrame(), "Advertisement Details", true);
+        detailDialog.setSize(600, 300);
 
-    JPanel detailPanel = new JPanel(new GridLayout(6, 2, 10, 10));
-    detailPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    
-//    detailPanel.add(new JLabel("Departman:"));
-//    detailPanel.add(new JLabel(adv.getDepartment()));
-    
-    detailPanel.add(new JLabel("İlan Adı:"));
-    detailPanel.add(new JLabel(adv.getTitle()));
+        JPanel detailPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+        detailPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-    detailPanel.add(new JLabel("Kurum Adı:"));
-    try {
-        String companyName = adv.getCompanyNameById(conn, adv.getCompanyId());
-        detailPanel.add(new JLabel(companyName));
-    } catch (SQLException ex) {
-        detailPanel.add(new JLabel("Hata: " + ex.getMessage()));
+    //    detailPanel.add(new JLabel("Departman:"));
+    //    detailPanel.add(new JLabel(adv.getDepartment()));
+
+        detailPanel.add(new JLabel("İlan Adı:"));
+        detailPanel.add(new JLabel(adv.getTitle()));
+
+        detailPanel.add(new JLabel("Kurum Adı:"));
+        try {
+            String companyName = adv.getCompanyNameById(conn, adv.getCompanyId());
+            detailPanel.add(new JLabel(companyName));
+        } catch (SQLException ex) {
+            detailPanel.add(new JLabel("Hata: " + ex.getMessage()));
+        }
+
+
+        JLabel descriptionLabel = new JLabel("Açıklama:");
+        JTextArea descriptionTextArea = new JTextArea(adv.getDescription());
+        descriptionTextArea.setLineWrap(true);
+        descriptionTextArea.setWrapStyleWord(true);
+        descriptionTextArea.setEditable(false);
+        JScrollPane descriptionScrollPane = new JScrollPane(descriptionTextArea);
+        detailPanel.add(descriptionLabel);
+        detailPanel.add(descriptionScrollPane);
+
+        detailPanel.add(new JLabel("İlan Açılış Tarihi:"));
+        detailPanel.add(new JLabel(adv.getOpenDate().toString()));
+
+        detailPanel.add(new JLabel("Bitiş Tarihi:"));
+        detailPanel.add(new JLabel(adv.getDeadlineDate().toString()));
+
+        detailPanel.add(new JLabel("Çalışma Modeli:"));
+        detailPanel.add(new JLabel(adv.getWorkingModel()));
+
+        detailDialog.add(detailPanel);
+        detailDialog.setLocationRelativeTo(null);
+        detailDialog.setVisible(true);
     }
-
-  
-    JLabel descriptionLabel = new JLabel("Açıklama:");
-    JTextArea descriptionTextArea = new JTextArea(adv.getDescription());
-    descriptionTextArea.setLineWrap(true);
-    descriptionTextArea.setWrapStyleWord(true);
-    descriptionTextArea.setEditable(false);
-    JScrollPane descriptionScrollPane = new JScrollPane(descriptionTextArea);
-    detailPanel.add(descriptionLabel);
-    detailPanel.add(descriptionScrollPane);
-
-    detailPanel.add(new JLabel("İlan Açılış Tarihi:"));
-    detailPanel.add(new JLabel(adv.getOpenDate().toString()));
-
-    detailPanel.add(new JLabel("Bitiş Tarihi:"));
-    detailPanel.add(new JLabel(adv.getDeadlineDate().toString()));
-
-    detailPanel.add(new JLabel("Çalışma Modeli:"));
-    detailPanel.add(new JLabel(adv.getWorkingModel()));
-
-    detailDialog.add(detailPanel);
-    detailDialog.setLocationRelativeTo(null);
-    detailDialog.setVisible(true);
-}
     
     /**
      * @param args the command line arguments
@@ -530,6 +605,8 @@ public class AdvertisementUI extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(AdvertisementUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
@@ -561,12 +638,14 @@ public class AdvertisementUI extends javax.swing.JFrame {
     private javax.swing.JPanel jobAdvPanel;
     private javax.swing.JComboBox<String> locationBox;
     private javax.swing.JLabel locationLabel;
-    private javax.swing.JLabel locationLabel1;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchField;
     private javax.swing.JButton submitButton;
     private javax.swing.JButton submitFilterButton;
     private javax.swing.JComboBox<String> typeBox;
+    private javax.swing.JLabel typeLabel;
+    private javax.swing.JComboBox<String> workTypeBox;
+    private javax.swing.JLabel workingTypeLabel;
     // End of variables declaration//GEN-END:variables
 }

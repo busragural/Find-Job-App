@@ -5,6 +5,7 @@
 package findjob;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,13 +14,13 @@ import java.time.LocalDate;
 public class Experience {
     private int id, userId, companyId;
     private String department, jobName, companyName; 
-    private LocalDate startDate, finishDate;
+    private Date startDate, finishDate;
 
     public Experience(){
         
     }
     
-    public Experience(int userId, String companyName, String department, String jobName, LocalDate startDate, LocalDate finishDate){
+    public Experience(int userId, String companyName, String department, String jobName, Date startDate, Date finishDate){
         this.userId = userId;
         this.companyName = companyName;
         this.department = department;
@@ -28,17 +29,18 @@ public class Experience {
         this.finishDate = finishDate;
     }
     
-    public void updateExperienceDetails(Connection conn, int userId, Experience updatedExperience){
+    public void updateExperienceDetails(Connection conn, int userId, Experience updatedExperience, int expId){
         try {
             int companyId = getCompanyIdByName(conn, updatedExperience.getCompanyName());
-            String updateQuery = "UPDATE experience SET company_id=?, department=?, job_title=? , start_date=?, finish_date=? WHERE user_id=?";
+            String updateQuery = "UPDATE experience SET company_id=?, department=?, job_title=? , start_date=?, finish_date=? WHERE user_id=? AND id=?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateQuery)) {
-                 preparedStatement.setInt(1, companyId);
+                preparedStatement.setInt(1, companyId);
                 preparedStatement.setString(2, updatedExperience.getDepartment());
                 preparedStatement.setString(3, updatedExperience.getJobName());
-                preparedStatement.setDate(4, Date.valueOf(updatedExperience.getStartDate()));
-                preparedStatement.setDate(5, Date.valueOf(updatedExperience.getFinishDate()));
+                preparedStatement.setDate(4, updatedExperience.getStartDate());
+                preparedStatement.setDate(5, updatedExperience.getFinishDate());
                 preparedStatement.setInt(6, userId);
+                preparedStatement.setInt(7, expId);
 
                 preparedStatement.executeUpdate();
                 System.out.println("Experience details updated successfully!");
@@ -81,8 +83,8 @@ public class Experience {
                         exp.setCompanyId(resultSet.getInt("company_id"));
                         exp.setDepartment(resultSet.getString("department"));
                         exp.setJobName(resultSet.getString("job_title"));
-                        exp.setStartDate(resultSet.getDate("start_date").toLocalDate());
-                        exp.setFinishDate(resultSet.getDate("finish_date").toLocalDate());
+                        exp.setStartDate(resultSet.getDate("start_date"));
+                        exp.setFinishDate(resultSet.getDate("finish_date"));
                         exp.setCompanyName(getCompanyNameById(conn, exp.getCompanyId()));
                     }
                 }
@@ -94,6 +96,50 @@ public class Experience {
 
         return exp;
     }
+    
+    
+    
+    public ArrayList<Experience> getExperienceList(Connection conn, int user_id) {
+        ArrayList<Experience> expList = new ArrayList<>();
+        
+        try {           
+            String query = "SELECT * FROM experience WHERE user_id = ? ";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                preparedStatement.setInt(1, user_id);
+
+                // Execute the query
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    // Check if there is any result
+                    while (resultSet.next()) {
+                        // Assuming that the columns in the 'experience' table are named appropriately
+                        Experience exp = new Experience();
+                        exp.setId(resultSet.getInt("id"));
+                        exp.setUserId(resultSet.getInt("user_id"));
+                        exp.setCompanyId(resultSet.getInt("company_id"));
+                        exp.setDepartment(resultSet.getString("department"));
+                        exp.setJobName(resultSet.getString("job_title"));
+                        exp.setStartDate(resultSet.getDate("start_date"));
+                        exp.setFinishDate(resultSet.getDate("finish_date"));
+                        exp.setCompanyName(getCompanyNameById(conn, exp.getCompanyId()));
+                        
+                        expList.add(exp);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle the SQLException
+        }
+
+        return expList;
+    }
+    
+    
+    
+    
+    
+    
+    
     
     public String getCompanyNameById(Connection conn, int companyId) throws SQLException {
         
@@ -170,28 +216,28 @@ public class Experience {
     /**
      * @return the startDate
      */
-    public LocalDate getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
     /**
      * @param startDate the startDate to set
      */
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
     /**
      * @return the finishDate
      */
-    public LocalDate getFinishDate() {
+    public Date getFinishDate() {
         return finishDate;
     }
 
     /**
      * @param finishDate the finishDate to set
      */
-    public void setFinishDate(LocalDate finishDate) {
+    public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
     }
 
@@ -221,6 +267,27 @@ public class Experience {
      */
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    void addExperience(Connection conn, int user_id, Experience exp) {
+        String sql = "INSERT INTO experience (user_id, company_id, job_title, department, start_date, finish_date) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {   
+            int compId = getCompanyIdByName(conn, exp.getCompanyName());
+            
+            preparedStatement.setInt(1, user_id);
+            preparedStatement.setInt(2, compId);
+            preparedStatement.setString(3, exp.getJobName());
+            preparedStatement.setString(4, exp.getDepartment());
+            preparedStatement.setDate(5, exp.getStartDate());
+            preparedStatement.setDate(6, exp.getFinishDate());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // SQL hatası oluştuğunda burada işlem yapabilirsiniz.
+            e.printStackTrace();
+            // Hata mesajını veya kullanıcıya gösterilecek mesajı belirleyebilirsiniz.
+            throw new RuntimeException("Eğitim bilgisi eklenirken bir hata oluştu.");
+        }
     }
     
     
