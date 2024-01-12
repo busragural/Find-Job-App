@@ -12,6 +12,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -25,16 +26,21 @@ public class AdvertisementUI extends javax.swing.JFrame {
     
     private Connection conn;
     Advertisement adv = new Advertisement();
-    ArrayList<Advertisement> jobAdvertisements;
-    ArrayList<Advertisement> courseAdvertisements;
-    ArrayList<Advertisement> filteredAdvertisements = new  ArrayList<>();
+    ArrayList<Advertisement> filteredAdvertisements;
     private DefaultTableModel advJobTableModel;
+    User currentUser;
+    
+    Application appliedAdvertisement = new Application();
 
     /**
      * Creates new form AdvertisementUI
      */
     public AdvertisementUI(Connection conn) {
-        this.jobAdvertisements = new ArrayList<>();
+        filteredAdvertisements = new  ArrayList<>();
+        currentUser = LoginUI.currentUser;
+        currentUser = currentUser.fetchUserDetails(conn, currentUser.getUsername());
+        System.out.println("name in advui " + currentUser.getUsername());
+        System.out.println("id in advui " + currentUser.getId());
         this.conn = conn;
         initComponents();
         Helpers.disableTextFields(jPanel1);
@@ -44,10 +50,10 @@ public class AdvertisementUI extends javax.swing.JFrame {
         advJobTableModel = new DefaultTableModel(new Object[]{"İlan Adı", "Kurum Adı", "Konum", "Bitiş Tarihi", "Başvuran Sayısı"}, 0);
         advTable.setModel(advJobTableModel);
         
-        jobAdvertisements = adv.getAllJobAdvertisements(conn);
-        setjobAdvertisementFields(jobAdvertisements);
+        filteredAdvertisements = adv.getAllJobAdvertisements(conn);
+        setjobAdvertisementFields(filteredAdvertisements);
         
-        courseAdvertisements = adv.getAllCourseAdvertisements(conn);
+        //courseAdvertisements = adv.getAllCourseAdvertisements(conn);
        
     }
     
@@ -234,17 +240,18 @@ public class AdvertisementUI extends javax.swing.JFrame {
                         .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(locationLabel)
-                    .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(typeLabel)
-                    .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(companyLabel)
+                        .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(workingTypeLabel)
-                        .addComponent(workTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(companyLabel)
-                            .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(workTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(locationLabel)
+                        .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(typeLabel)
+                        .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -260,6 +267,11 @@ public class AdvertisementUI extends javax.swing.JFrame {
         submitButton.setFont(new java.awt.Font("SansSerif", 1, 16)); // NOI18N
         submitButton.setForeground(new java.awt.Color(234, 231, 231));
         submitButton.setText("Başvur");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
 
         advTable.setBackground(new java.awt.Color(234, 231, 231));
         advTable.setForeground(new java.awt.Color(40, 55, 57));
@@ -483,10 +495,13 @@ public class AdvertisementUI extends javax.swing.JFrame {
 
         if(selectedCompany.compareTo("Hepsi") == 0 && selectedLocation.compareTo("Hepsi") == 0  && selectedType.compareTo("Hepsi") == 0 ){
             if(advSelected ){
-                setjobAdvertisementFields(jobAdvertisements);
+                filteredAdvertisements = adv.getAllJobAdvertisements(conn);
+                setjobAdvertisementFields(filteredAdvertisements);
+                
             }
             else{
-                setjobAdvertisementFields(courseAdvertisements);
+                filteredAdvertisements = adv.getAllCourseAdvertisements(conn);
+                setjobAdvertisementFields(filteredAdvertisements);
             }
         }
         else{
@@ -539,14 +554,9 @@ public class AdvertisementUI extends javax.swing.JFrame {
         if (selectedRow >= 0 ) {
             Advertisement selectedAdvertisement;
             // Get the Advertisement object from the selected row
-            if(filteredAdvertisements == null){
-                selectedAdvertisement = jobAdvertisements.get(selectedRow);
-            }
-            else{
-                selectedAdvertisement = filteredAdvertisements.get(selectedRow);
-            }
             
-
+            selectedAdvertisement = filteredAdvertisements.get(selectedRow);
+   
             // Show the details dialog
             showDetailDialog(selectedAdvertisement);
         } else {
@@ -554,6 +564,23 @@ public class AdvertisementUI extends javax.swing.JFrame {
             System.out.println("No row selected.");
         }
     }//GEN-LAST:event_detailButtonActionPerformed
+
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = advTable.getSelectedRow();
+        if(selectedRow >=0){
+            
+            Advertisement selectedAdvertisement;
+           
+            selectedAdvertisement = filteredAdvertisements.get(selectedRow);   
+            System.out.println("title: " + selectedAdvertisement.getTitle());
+            appliedAdvertisement.applyAdvertisement(conn, selectedAdvertisement, currentUser.getId());
+            
+            String message = "Başvuru yapıldı.";
+            JOptionPane.showMessageDialog(this, message);
+        }
+        
+    }//GEN-LAST:event_submitButtonActionPerformed
 
     private void showDetailDialog(Advertisement adv) {
         JDialog detailDialog = new JDialog(new JFrame(), "Advertisement Details", true);

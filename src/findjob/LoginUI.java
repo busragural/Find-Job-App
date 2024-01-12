@@ -175,7 +175,7 @@ public class LoginUI extends javax.swing.JFrame {
             new AdvertisementUI(conn).setVisible(true);
         }
         else{
-            String message = "Invalid user.";
+            String message = "Geçersiz kullanıcı.";
             JOptionPane.showMessageDialog(this, message);
         }
         

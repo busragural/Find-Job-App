@@ -183,18 +183,20 @@
                                   </Group>
                               </Group>
                               <EmptySpace pref="10" max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="locationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="locationBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="typeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="typeBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                      <Component id="companyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="companyNameBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="workingTypeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="workTypeBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Group type="103" alignment="3" groupAlignment="3" attributes="0">
-                                          <Component id="companyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="companyNameBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                                  </Group>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="locationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="locationBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="typeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="typeBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -476,6 +478,9 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Ba&#x15f;vur"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="submitButtonActionPerformed"/>
+                      </Events>
                     </Component>
                     <Container class="javax.swing.JScrollPane" name="jScrollPane2">
                       <AuxValues>
