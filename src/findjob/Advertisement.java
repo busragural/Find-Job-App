@@ -157,7 +157,50 @@ public class Advertisement {
         return filteredAdvertisements;
     }
 
-  
+    public ArrayList<Advertisement> searchFilter(Connection conn, String searchKey, boolean selectedAdv) {
+        ArrayList<Advertisement> matchingAdvertisements = new ArrayList<>();
+
+        try {
+            // Assuming you have a table named 'advertisement' with a column 'title'
+            String sql = "SELECT * FROM advertisement WHERE is_active=true AND is_job = ? AND (? IS NULL OR lower(title) LIKE '%' || ? || '%')";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setBoolean(1, selectedAdv);
+                stmt.setString(2, searchKey.toLowerCase());
+                stmt.setString(3, searchKey.toLowerCase());
+                
+                
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int id = rs.getInt("id");
+                        int companyId = rs.getInt("company_id");
+                        int appliedCount = rs.getInt("applied_count");
+                        String title = rs.getString("title");
+                        String description = rs.getString("description");
+                        String location = rs.getString("location");
+                        String department = rs.getString("department");
+                        String workingModel = rs.getString("working_model");
+                        String type = rs.getString("type");
+                        boolean isActive = rs.getBoolean("is_active");
+                        boolean isJob = rs.getBoolean("is_job");
+                        LocalDate openDate = rs.getDate("open_date").toLocalDate();
+                        LocalDate deadlineDate = rs.getDate("deadline_date").toLocalDate();
+
+                        Advertisement advertisement = new Advertisement(id, companyId, title, description, location,
+                                openDate, deadlineDate, appliedCount, isActive, isJob, type, department, workingModel);
+
+                        matchingAdvertisements.add(advertisement);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            // Handle any SQL exceptions
+            ex.printStackTrace();
+        }
+
+        return matchingAdvertisements;
+    }
+
     
     
     

@@ -244,14 +244,22 @@ public class RegisterUI extends javax.swing.JFrame {
             return;
         }
         User newUser = new User(name, surname, mail, username, password); 
-        int id = newUser.register(conn, newUser);
-        System.out.println("yeni eklenen kisinin id bilgisi: "+ id);
-        newUser.checkEducationTable(conn, id);
-        newUser.checkExperienceTable(conn, id);
-        newUser.checkCertificateTable(conn, id);
-        String message = "Kayıt basarili!";
-        JOptionPane.showMessageDialog(this, message);
-        dispose();
+        
+        try{
+            int id = newUser.register(conn, newUser);
+            System.out.println("yeni eklenen kisinin id bilgisi: "+ id);
+            newUser.checkEducationTable(conn, id);
+            newUser.checkExperienceTable(conn, id);
+            newUser.checkCertificateTable(conn, id);
+            String message = "Kayıt basarili!";
+            JOptionPane.showMessageDialog(this, message);
+            dispose();
+        }
+        catch(Exception e){
+            String message = "Şifre en az beş karakter içermeli.";
+            JOptionPane.showMessageDialog(this, message);
+        }
+  
         
     }//GEN-LAST:event_submitButtonActionPerformed
 

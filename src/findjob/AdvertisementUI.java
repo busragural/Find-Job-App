@@ -57,29 +57,7 @@ public class AdvertisementUI extends javax.swing.JFrame {
        
     }
     
-    
-    void setjobAdvertisementFields(ArrayList<Advertisement> jobAdvertisements) {
-        advJobTableModel.setRowCount(0);
-        for (Advertisement adv : jobAdvertisements) {
-            String name ="";
-            try {
-                name = adv.getCompanyNameById(conn, adv.getCompanyId());
-            } catch (SQLException ex) {
-                Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            Object[] row = {
-                    adv.getTitle(),
-                    name, // Assuming there is a method like getCompanyName() in Advertisement class
-                    adv.getLocation(),
-                    adv.getDeadlineDate(), // Assuming getDeadlineDate() returns a formatted date
-                    adv.getAppliedCount()
-            };
-            advJobTableModel.addRow(row);
-        }
-
-        advTable.setModel(advJobTableModel);
-    }
-
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -206,13 +184,13 @@ public class AdvertisementUI extends javax.swing.JFrame {
                         .addComponent(locationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(locationBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39)
+                        .addGap(54, 54, 54)
                         .addComponent(typeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(typeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(imagePanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(companyLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(companyNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -221,12 +199,13 @@ public class AdvertisementUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(workTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(imagePanelLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
                         .addComponent(searchButton)
-                        .addGap(144, 144, 144)
+                        .addGap(150, 150, 150)
                         .addComponent(jobAdvButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(courseAdvButton)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -460,74 +439,114 @@ public class AdvertisementUI extends javax.swing.JFrame {
         new AccountPageUI(conn).setVisible(true);
     }//GEN-LAST:event_homeBttnActionPerformed
 
+    void setjobAdvertisementFields(ArrayList<Advertisement> jobAdvertisements) {
+        advJobTableModel.setRowCount(0);
+        for (Advertisement adv : jobAdvertisements) {
+            String name ="";
+            try {
+                name = adv.getCompanyNameById(conn, adv.getCompanyId());
+            } catch (SQLException ex) {
+                Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Object[] row = {
+                    adv.getTitle(),
+                    name, // Assuming there is a method like getCompanyName() in Advertisement class
+                    adv.getLocation(),
+                    adv.getDeadlineDate(), // Assuming getDeadlineDate() returns a formatted date
+                    adv.getAppliedCount()
+            };
+            advJobTableModel.addRow(row);
+        }
+
+        advTable.setModel(advJobTableModel);
+    }
+    
+    private void handleFilterSubmission() {
+        boolean advSelected = true;
+
+                if (jobAdvButton.isSelected()) {
+                    advSelected = true;
+                    System.out.println("Job Advertisement seçildi.");
+                } else if (courseAdvButton.isSelected()) {
+                    advSelected = false;
+                    System.out.println("Course Advertisement seçildi.");
+                } else {
+                    System.out.println("Hiçbiri seçilmedi.");
+                }
+
+                String selectedLocation = (String) locationBox.getSelectedItem();
+                System.out.println(selectedLocation);
+                String selectedType= (String) typeBox.getSelectedItem();
+                System.out.println(selectedType);
+                String selectedCompany= (String) companyNameBox.getSelectedItem();
+                System.out.println(selectedCompany);
+
+
+                int id = 0;
+                try {
+                    id = adv.getCompanyIdByName(conn, selectedCompany);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                String selectedWorkType = (String) workTypeBox.getSelectedItem();
+                System.out.println(selectedWorkType);
+
+
+                if(selectedCompany.compareTo("Hepsi") == 0 && selectedLocation.compareTo("Hepsi") == 0  && selectedType.compareTo("Hepsi") == 0 ){
+                    if(advSelected ){
+                        filteredAdvertisements = adv.getAllJobAdvertisements(conn);
+                        setjobAdvertisementFields(filteredAdvertisements);
+
+                    }
+                    else{
+                        filteredAdvertisements = adv.getAllCourseAdvertisements(conn);
+                        setjobAdvertisementFields(filteredAdvertisements);
+                    }
+                }
+                else{
+                    if (id == -1) {
+                        id = 0;
+                    }
+                    if ("Hepsi".equals(selectedLocation)) {
+                        selectedLocation = null;
+                    }
+
+                    if ("Hepsi".equals(selectedType)) {
+                        selectedType = null;
+                    }
+                    if("Hepsi".equals(selectedWorkType)){
+                        selectedWorkType = null;
+                    }
+
+
+                    filteredAdvertisements = adv.getFilteredAdvertisements(conn, advSelected, selectedLocation, selectedType, id, selectedWorkType);
+                    setjobAdvertisementFields(filteredAdvertisements);
+                }
+    }   
     private void submitFilterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitFilterButtonActionPerformed
         // TODO add your handling code here:
-        boolean advSelected = true;
-        
-        if (jobAdvButton.isSelected()) {
-            advSelected = true;
-            System.out.println("Job Advertisement seçildi.");
-        } else if (courseAdvButton.isSelected()) {
-            advSelected = false;
-            System.out.println("Course Advertisement seçildi.");
-        } else {
-            System.out.println("Hiçbiri seçilmedi.");
-        }
-        
-        String selectedLocation = (String) locationBox.getSelectedItem();
-        System.out.println(selectedLocation);
-        String selectedType= (String) typeBox.getSelectedItem();
-        System.out.println(selectedType);
-        String selectedCompany= (String) companyNameBox.getSelectedItem();
-        System.out.println(selectedCompany);
-        
-        
-        int id = 0;
-        try {
-            id = adv.getCompanyIdByName(conn, selectedCompany);
-        } catch (SQLException ex) {
-            Logger.getLogger(AdvertisementUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        String selectedWorkType = (String) workTypeBox.getSelectedItem();
-        System.out.println(selectedWorkType);
-        
-
-        if(selectedCompany.compareTo("Hepsi") == 0 && selectedLocation.compareTo("Hepsi") == 0  && selectedType.compareTo("Hepsi") == 0 ){
-            if(advSelected ){
-                filteredAdvertisements = adv.getAllJobAdvertisements(conn);
-                setjobAdvertisementFields(filteredAdvertisements);
-                
-            }
-            else{
-                filteredAdvertisements = adv.getAllCourseAdvertisements(conn);
-                setjobAdvertisementFields(filteredAdvertisements);
-            }
-        }
-        else{
-            if (id == -1) {
-                id = 0;
-            }
-            if ("Hepsi".equals(selectedLocation)) {
-                selectedLocation = null;
-            }
-
-            if ("Hepsi".equals(selectedType)) {
-                selectedType = null;
-            }
-            if("Hepsi".equals(selectedWorkType)){
-                selectedWorkType = null;
-            }
-            
-           
-            filteredAdvertisements = adv.getFilteredAdvertisements(conn, advSelected, selectedLocation, selectedType, id, selectedWorkType);
-            setjobAdvertisementFields(filteredAdvertisements);
-        }
+        handleFilterSubmission();
         
     }//GEN-LAST:event_submitFilterButtonActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
+        String searchKey = searchField.getText();
+        boolean selectedAdv;
+        
+        if (courseAdvButton.isSelected()) {
+            selectedAdv = false;
+        }
+        else{
+            selectedAdv = true;
+        }
+        
+        ArrayList<Advertisement> searchedAdv = new  ArrayList<>();
+        searchedAdv = adv.searchFilter(conn, searchKey, selectedAdv);
+        
+        setjobAdvertisementFields(searchedAdv);
+        
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void jobAdvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jobAdvButtonActionPerformed
@@ -574,19 +593,29 @@ public class AdvertisementUI extends javax.swing.JFrame {
            
             selectedAdvertisement = filteredAdvertisements.get(selectedRow);   
             System.out.println("title: " + selectedAdvertisement.getTitle());
-            appliedAdvertisement.applyAdvertisement(conn, selectedAdvertisement, currentUser.getId());
+            try {
+                appliedAdvertisement.applyAdvertisement(conn, selectedAdvertisement, currentUser.getId());
+                String message = "Başvuru yapıldı.";
+                JOptionPane.showMessageDialog(this, message);
+            } catch (Exception e) {
+                String message = "Bu ilana daha önce başvurdun";
+                JOptionPane.showMessageDialog(this, message);
+            }
             
-            String message = "Başvuru yapıldı.";
-            JOptionPane.showMessageDialog(this, message);
+            
+           handleFilterSubmission();
+            
         }
+        
         
     }//GEN-LAST:event_submitButtonActionPerformed
 
+  
     private void showDetailDialog(Advertisement adv) {
         JDialog detailDialog = new JDialog(new JFrame(), "Advertisement Details", true);
-        detailDialog.setSize(600, 300);
+        detailDialog.setSize(600, 400);
 
-        JPanel detailPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+        JPanel detailPanel = new JPanel(new GridLayout(8, 2, 10, 10));
         detailPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
     //    detailPanel.add(new JLabel("Departman:"));
@@ -609,9 +638,15 @@ public class AdvertisementUI extends javax.swing.JFrame {
         descriptionTextArea.setLineWrap(true);
         descriptionTextArea.setWrapStyleWord(true);
         descriptionTextArea.setEditable(false);
+        descriptionTextArea.setFocusable(false);
         JScrollPane descriptionScrollPane = new JScrollPane(descriptionTextArea);
         detailPanel.add(descriptionLabel);
         detailPanel.add(descriptionScrollPane);
+        
+        
+        detailPanel.add(new JLabel("Konum:"));
+        detailPanel.add(new JLabel(adv.getLocation()));
+
 
         detailPanel.add(new JLabel("İlan Açılış Tarihi:"));
         detailPanel.add(new JLabel(adv.getOpenDate().toString()));
@@ -619,8 +654,14 @@ public class AdvertisementUI extends javax.swing.JFrame {
         detailPanel.add(new JLabel("Bitiş Tarihi:"));
         detailPanel.add(new JLabel(adv.getDeadlineDate().toString()));
 
-        detailPanel.add(new JLabel("Çalışma Modeli:"));
-        detailPanel.add(new JLabel(adv.getWorkingModel()));
+        if(adv.getWorkingModel() != null){
+            detailPanel.add(new JLabel("Çalışma Modeli:"));
+            detailPanel.add(new JLabel(adv.getWorkingModel()));
+        }
+        
+        detailPanel.add(new JLabel("Tipi:"));
+        detailPanel.add(new JLabel(adv.getType()));
+        
 
         detailDialog.add(detailPanel);
         detailDialog.setLocationRelativeTo(null);

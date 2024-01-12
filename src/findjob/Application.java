@@ -26,7 +26,7 @@ public class Application {
         
     }
     
-    public void applyAdvertisement(Connection conn, Advertisement adv, int userId) {
+    public void applyAdvertisement(Connection conn, Advertisement adv, int userId) throws SQLException {
         System.out.println("adv.getId" + adv.getId());
         System.out.println("userId" + userId);
         String query = "INSERT INTO applications (user_id, adv_id, application_date) VALUES (?, ?, ?)";
@@ -40,6 +40,7 @@ public class Application {
             System.out.println("Application successful.");
         } catch (SQLException e) {
             e.printStackTrace(); // Handle the exception according to your needs
+            throw e;
         }
     }
     

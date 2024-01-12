@@ -45,7 +45,7 @@ public class User {
     
    
     
-    public int register(Connection conn, User user) {
+    public int register(Connection conn, User user) throws SQLException {
        int userId = -1; // Varsayılan olarak -1, işlem başarısız olursa bu değer kullanılacaktır
 
        try {
@@ -78,6 +78,7 @@ public class User {
            }
        } catch (SQLException e) {
            e.printStackTrace();
+           throw e;
        }
 
        return userId;
